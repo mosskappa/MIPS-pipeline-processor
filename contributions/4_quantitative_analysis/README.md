@@ -44,4 +44,12 @@ See [`docs/overhead_analysis.md`](../../docs/overhead_analysis.md) for detailed 
 4. Pipeline efficiency improves from 55% to 79%
 
 ## Demo Video
-> See presentation slides for visualization
+
+### Quantitative Analysis Demo
+![Demo Video](quantitative_analysis.mp4)
+
+**Demonstrates:**
+- CPI measurement with forwarding ON
+- 31% CPI improvement (1.82 to 1.26)
+- 68% stall reduction
+
