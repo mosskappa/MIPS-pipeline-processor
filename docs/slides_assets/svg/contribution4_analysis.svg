@@ -1,0 +1,35 @@
+<!-- 4. Quantitative Analysis -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350">
+  <rect width="800" height="350" fill="#0f172a"/>
+  <text x="400" y="35" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">Quantitative Analysis</text>
+  <text x="400" y="60" text-anchor="middle" fill="#94a3b8" font-size="14">Performance Bottleneck Breakdown</text>
+  
+  <!-- Metrics Cards -->
+  <rect x="50" y="90" width="200" height="100" rx="10" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+  <text x="150" y="120" text-anchor="middle" fill="#3b82f6" font-size="14">Theoretical CPI</text>
+  <text x="150" y="160" text-anchor="middle" fill="#60a5fa" font-size="36" font-weight="bold">1.00</text>
+  
+  <rect x="300" y="90" width="200" height="100" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="400" y="120" text-anchor="middle" fill="#22c55e" font-size="14">Actual CPI (FWD ON)</text>
+  <text x="400" y="160" text-anchor="middle" fill="#4ade80" font-size="36" font-weight="bold">1.26</text>
+  
+  <rect x="550" y="90" width="200" height="100" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <text x="650" y="120" text-anchor="middle" fill="#f59e0b" font-size="14">Pipeline Efficiency</text>
+  <text x="650" y="160" text-anchor="middle" fill="#fbbf24" font-size="36" font-weight="bold">79%</text>
+  
+  <!-- Bottleneck Breakdown -->
+  <rect x="50" y="220" width="700" height="110" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="400" y="250" text-anchor="middle" fill="#8b5cf6" font-size="16" font-weight="bold">Performance Bottlenecks</text>
+  
+  <rect x="80" y="270" width="180" height="40" rx="6" fill="#ef4444"/>
+  <text x="170" y="285" text-anchor="middle" fill="#fff" font-size="11">Load-Use Hazard</text>
+  <text x="170" y="302" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">12 stalls</text>
+  
+  <rect x="280" y="270" width="160" height="40" rx="6" fill="#f59e0b"/>
+  <text x="360" y="285" text-anchor="middle" fill="#fff" font-size="11">Branch Flush</text>
+  <text x="360" y="302" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">13 cycles</text>
+  
+  <rect x="460" y="270" width="260" height="40" rx="6" fill="#22c55e"/>
+  <text x="590" y="285" text-anchor="middle" fill="#fff" font-size="11">Forwarded (Resolved)</text>
+  <text x="590" y="302" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">77 hazards</text>
+</svg>
