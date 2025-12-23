@@ -38,7 +38,7 @@ Traditional:     SIMD (8 lanes):
 ![Demo Video](simd_alu_demo.mp4)
 
 **Demonstrates:**
-- ✅ 8-lane parallel processing
-- ✅ 5 operations (ADD, SUB, MUL, DIV, EXP)
-- ✅ All 40 test cases PASS
+- 8-lane parallel processing
+- 5 operations (ADD, SUB, MUL, DIV, EXP)
+- All 40 test cases PASS
 

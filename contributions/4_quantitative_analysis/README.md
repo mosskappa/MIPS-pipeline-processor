@@ -30,9 +30,9 @@ Empirical performance measurement comparing pipeline configurations.
 
 | Bottleneck | Count | Avoidable? |
 |------------|-------|------------|
-| Load-Use Hazard | 12 | ❌ No (Forwarding can't help) |
+| Load-Use Hazard | 12 | No (Forwarding can't help) |
 | Branch Flush | 13 | Partially |
-| Forwarded Hazards | 77 | ✅ Resolved by FWD |
+| Forwarded Hazards | 77 | Yes (Resolved by FWD) |
 
 ## Analysis Report
 See [`docs/overhead_analysis.md`](../../docs/overhead_analysis.md) for detailed performance ceiling analysis.

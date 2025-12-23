@@ -31,4 +31,12 @@ endgenerate
 - **Hardware unrolling**: iterations become parallel hardware units
 
 ## Demo Video
-> Place your Vivado simulation recording here after demo
+
+### Hardware Unrolling Demo
+![Demo Video](simd_alu_unrolling.mp4)
+
+**Demonstrates:**
+- Verilog `generate` syntax
+- 8-lane parallel hardware instantiation
+- 8x throughput improvement
+

@@ -46,8 +46,8 @@ Pipeline Stages:
 ![Demo Video](simd_expr_demo.mp4)
 
 **Demonstrates:**
-- ✅ Operator Priority (^ > * > + -)
-- ✅ 8-lane SIMD Parallelism
-- ✅ Correct Integer Division
-- ✅ All 4 tests PASS
+- Operator Priority (^ > * > + -)
+- 8-lane SIMD Parallelism
+- Correct Integer Division
+- All 4 tests PASS
 
