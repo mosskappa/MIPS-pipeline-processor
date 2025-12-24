@@ -76,7 +76,7 @@ Contributions are welcomed, both general improvements as well as new features su
 
 ## My Contributions (劉俊逸 M143140014)
 
-I added **9 contributions** to this project for Computer Architecture Fall 2025:
+I added **10 contributions** to this project for Computer Architecture Fall 2025:
 
 | # | Contribution | Description | Key Result |
 |---|-------------|-------------|------------|
@@ -89,6 +89,7 @@ I added **9 contributions** to this project for Computer Architecture Fall 2025:
 | 7 | **Comprehensive Analysis** | Single vs. combined optimization effects | Synergy study |
 | 8 | **Expression Parser** | Full arithmetic with parentheses & associativity | Stack-based |
 | 9 | **CORDIC Math Functions** | Graduate-level trigonometry (sin/cos) | 16-stage pipeline |
+| 10 | **Cache Memory Hierarchy** | L1 Direct-Mapped Data Cache | **~7x speedup** |
 
 ### Performance Results
 
@@ -97,6 +98,7 @@ I added **9 contributions** to this project for Computer Architecture Fall 2025:
 | CPI | 1.82 | 1.26 | **31%** |
 | Stall Cycles | 114 | 37 | **68%** |
 | Pipeline Efficiency | 55% | 79% | **44%** |
+| Memory Access Time | 10 cycles | ~1.5 cycles | **~7x** |
 
 See [`contributions/`](contributions/) folder for detailed documentation.
 

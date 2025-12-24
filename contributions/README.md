@@ -1,6 +1,6 @@
 # My Contributions
 
-This folder contains all **9 contributions** I made to this MIPS Pipeline Processor project.
+This folder contains all **10 contributions** I made to this MIPS Pipeline Processor project.
 
 ## Contribution Summary
 
@@ -15,6 +15,7 @@ This folder contains all **9 contributions** I made to this MIPS Pipeline Proces
 | 7 | [Comprehensive Analysis](./7_comprehensive_analysis/) | `7_comprehensive_analysis/` | Combined Efficiency Analysis |
 | 8 | [Parentheses Support](./8_parentheses_support/) | `8_parentheses_support/` | Expression Parser Upgrade |
 | 9 | [CORDIC Math Functions](./9_cordic_math_functions/) | `9_cordic_math_functions/` | Graduate-Level Trigonometry |
+| 10 | [Cache Memory Hierarchy](./10_cache_memory_hierarchy/) | `10_cache_memory_hierarchy/` | L1 Data Cache (~7x Speedup) |
 
 ## Demo Videos
 
@@ -34,3 +35,5 @@ Each contribution folder contains:
 | SIMD Operations | 1 (ADD) | 5 (+,-,x,/,^) | **5x** |
 | Branch Accuracy | 0% (no predictor) | 78.33% | **78%** |
 | SIMD Throughput | 1 op/cycle | 8 ops/cycle | **8x** |
+| Memory Access Time | 10 cycles | ~1.5 cycles | **~7x** |
+

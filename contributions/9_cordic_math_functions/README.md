@@ -1,95 +1,92 @@
-# CORDIC-Based Trigonometric Functions (Graduate-Level Extension)
+# Contribution 9: CORDIC-Based Trigonometric Functions
 
-This contribution integrates a **research-grade CORDIC (COordinate Rotation DIgital Computer)** algorithm for calculating sine and cosine functions, representing a significant upgrade from basic arithmetic operations.
+## Overview
+Integrated a graduate-level CORDIC (COordinate Rotation DIgital Computer) algorithm for computing sine and cosine functions, demonstrating advanced mathematical operations beyond basic ALU.
 
 ## Background
-
-**CORDIC** is a widely-used algorithm in:
+CORDIC is a hardware-efficient iterative algorithm widely used in:
 - Digital Signal Processing (DSP)
-- Navigation systems (航空航天)
+- Navigation systems (aerospace)
 - Graphics processing
 - Scientific computing
 
-It is particularly suitable for hardware implementation because it **avoids costly multipliers**, using only:
-- Bit-shifts (移位)
-- Additions/Subtractions (加減法)
-- Look-up tables (查表)
+It computes trigonometric functions using only **shift-add operations**, avoiding costly hardware multipliers.
 
----
-
-## Source & Attribution
-
-**Original Project**: [Pranav-2045/CORDIC](https://github.com/Pranav-2045/CORDIC)  
-**Author**: Pranav-2045  
-**Integrated by**: 劉俊逸 (M143140014)
-
-This is a **direct integration** of the original project to demonstrate graduate-level mathematical capabilities.
-
----
+## Source Attribution
+- **Original Project**: [Pranav-2045/CORDIC](https://github.com/Pranav-2045/CORDIC)
+- **Author**: Pranav-2045
+- **Integrated by**: M143140014
 
 ## Technical Specifications
 
 ### Architecture
-- **16-bit fixed-point** arithmetic (Q2.14 format)
-- **16-stage fully pipelined** design
-- **High throughput**: Accepts new input every clock cycle after initial latency
-- **Multiplier-free**: Hardware-efficient implementation
+| Parameter | Value |
+|-----------|-------|
+| Data Width | 16-bit fixed-point (Q2.14) |
+| Pipeline Depth | 16 stages |
+| Latency | 16 clock cycles |
+| Throughput | 1 result/cycle (pipelined) |
+| Angle Range | -90 to +90 degrees |
+| Precision | ~14 bits (~0.01% error) |
 
-### Supported Functions
-- `sin(θ)`: Sine function
-- `cos(θ)`: Cosine function
-- Angle range: -90° to +90° (可擴展到全範圍)
+### CORDIC Algorithm
+```
+Initial vector: (x0, y0) = (1/K, 0), where K = 1.647
 
-### Performance
-- **Latency**: 16 clock cycles
-- **Throughput**: 1 result/cycle (pipelined)
-- **Precision**: ~14 bits (定點運算精度)
+Iteration:
+  x[i+1] = x[i] - d[i] * y[i] * 2^(-i)
+  y[i+1] = y[i] + d[i] * x[i] * 2^(-i)
+  z[i+1] = z[i] - d[i] * arctan(2^(-i))
 
----
+where d[i] = sign(z[i])
+
+After n iterations:
+  cos(theta) = x[n]
+  sin(theta) = y[n]
+```
+
+### Hardware Efficiency
+- **No multipliers**: Only adders and shifters
+- **Fully pipelined**: 16-stage pipeline accepts new input every cycle
+- **Look-up table**: Pre-computed arctan values
 
 ## Files
+- `cordic.v` - 16-stage pipelined CORDIC engine
+- `tb_cordic.v` - Testbench with multiple angle verification
 
-- `cordic.v`: Main CORDIC engine (16-stage pipeline)
-- `tb_cordic.v`: Comprehensive testbench with multiple test angles
+## Test Cases
 
----
+| Angle | Expected cos | Expected sin | Error Tolerance |
+|-------|-------------|-------------|-----------------|
+| 0 | 1.000 | 0.000 | < 0.01 |
+| 30 | 0.866 | 0.500 | < 0.01 |
+| 45 | 0.707 | 0.707 | < 0.01 |
+| 60 | 0.500 | 0.866 | < 0.01 |
+| 90 | 0.000 | 1.000 | < 0.01 |
 
 ## How to Run (Vivado)
+```tcl
+set_property top tb_cordic [current_fileset -simset]
+launch_simulation
+run 10000ns
+```
 
-1. Open Vivado 2022
-2. Add both `cordic.v` and `tb_cordic.v` to simulation sources
-3. Run behavioral simulation
-4. Expected output:
-   ```
-   Testing angle: 30.0 degrees
-   DUT Output: cos=0.866, sin=0.500
-   Expected:   cos=0.866, sin=0.500
-   ```
+Expected output:
+```
+Testing angle: 30.0 degrees
+DUT Output: cos=0.866, sin=0.500
+Expected:   cos=0.866, sin=0.500
+[PASS]
+```
 
----
+## Why Graduate-Level?
+- CORDIC is a core topic in graduate DSP and Computer Architecture courses
+- Used in real-world applications: GPS receivers, radar systems, graphics accelerators
+- Demonstrates understanding of iterative approximation algorithms
+- Hardware-efficient design without expensive multipliers
 
-## Connection to Course Objectives
-
-This contribution demonstrates:
-
-1. **Advanced Mathematics**: Extends beyond basic ALU to transcendental functions (超越基本四則運算)
-2. **Algorithm Implementation**: Shows understanding of iterative approximation algorithms
-3. **Resource-Aware Design**: Multiplier-free design demonstrates understanding of hardware constraints
-4. **Research Integration**: Ability to leverage and integrate existing academic work
-
----
-
-## Professor's Feedback Addressed
-
-> "你要不要去找一個別人研究所等級的 SIMD 研究？...譬如說有微積分、積分等等針對 Complex Mathematic Function 的。"
-
-**Response**: CORDIC is a graduate-level algorithm commonly taught in advanced computer architecture and DSP courses. While not calculus per se, trigonometric functions are fundamental to many scientific computations including numerical integration, Fourier transforms, and signal analysis.
-
----
-
-## Future Extensions (Optional)
-
-If time permits, this module could be extended to:
-- **Hyperbolic functions**: `sinh`, `cosh`, `tanh`
-- **Vector mode**: Calculate magnitude and phase
-- **SIMD integration**: Parallel CORDIC units for 8-lane vector processing
+## Future Extensions
+- Hyperbolic mode: sinh, cosh, tanh
+- Vector mode: magnitude and phase calculation
+- SIMD integration: 8-lane parallel CORDIC
+- Full-range support: 0 to 360 degrees
