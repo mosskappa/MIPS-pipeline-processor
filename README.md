@@ -78,6 +78,8 @@ Contributions are welcomed, both general improvements as well as new features su
 
 I added **10 contributions** to this project for Computer Architecture Fall 2025:
 
+### Contribution Summary Table
+
 | # | Contribution | Description | Key Result |
 |---|-------------|-------------|------------|
 | 1 | **Performance Testbench** | `testbench_metrics_enhanced.v` for CPI measurement | Automated metrics |
@@ -91,14 +93,88 @@ I added **10 contributions** to this project for Computer Architecture Fall 2025
 | 9 | **CORDIC Math Functions** | Graduate-level trigonometry (sin/cos) | 16-stage pipeline |
 | 10 | **Cache Memory Hierarchy** | L1 Direct-Mapped Data Cache | **~7x speedup** |
 
-### Performance Results
+---
 
-| Metric | Before (FWD OFF) | After (FWD ON) | Improvement |
-|--------|------------------|----------------|-------------|
+### Contribution 7: Comprehensive Performance Analysis
+
+Analyzes the **combined effects** of multiple optimization techniques (Forwarding + Branch Prediction) rather than viewing them in isolation. Uses Amdahl's Law and CPI decomposition.
+
+| Configuration | CPI | Speedup | Notes |
+|---------------|-----|---------|-------|
+| Baseline | 1.82 | 1.00x | High stall rate |
+| + Forwarding | 1.26 | 1.44x | Resolves RAW hazards |
+| + Branch Pred | 1.65 | 1.10x | Reduces flush penalty |
+| Combined | 1.15 | 1.58x | **Best performance** |
+
+**Key Finding**: Synergy Factor = 1.0, meaning Forwarding and Branch Prediction are orthogonal optimizations.
+
+---
+
+### Contribution 8: Expression Parser with Parentheses Support
+
+Implements **Shunting-yard algorithm** (Dijkstra, 1961) for complete expression parsing:
+
+- **Stack-based parentheses handling**: `(` and `)` support
+- **Operator precedence**: `^` > `* /` > `+ -`
+- **Right-associativity for exponentiation**: `2^3^2 = 512` (not 64)
+
+| Test Expression | Result |
+|-----------------|--------|
+| `5 * (3 + 4)` | 35 |
+| `2 ^ 3 ^ 2` | 512 |
+| `100 / (2 + 3)` | 20 |
+
+---
+
+### Contribution 9: CORDIC Trigonometric Functions (Graduate-Level)
+
+Integrates a **16-stage pipelined CORDIC** (COordinate Rotation DIgital Computer) algorithm for computing sine and cosine functions.
+
+| Specification | Value |
+|---------------|-------|
+| Algorithm | CORDIC (iterative rotation) |
+| Data Width | 16-bit fixed-point (Q2.14) |
+| Pipeline Depth | 16 stages |
+| Throughput | 1 result/cycle |
+| Hardware | **Multiplier-free** (shift-add only) |
+
+Applications: DSP, navigation systems, graphics processing.
+
+Source: [Pranav-2045/CORDIC](https://github.com/Pranav-2045/CORDIC)
+
+---
+
+### Contribution 10: L1 Cache Memory Hierarchy
+
+Implements a **Direct-Mapped L1 Data Cache** addressing the Memory Wall problem.
+
+| Parameter | Value |
+|-----------|-------|
+| Cache Size | 8 KB |
+| Block Size | 32 bytes (8 words) |
+| Mapping | Direct-Mapped |
+| Write Policy | Write-Back, Write-Allocate |
+
+**Performance Results**:
+```
+AMAT = Hit Time + (Miss Rate × Miss Penalty)
+     = 1 + (0.05 × 10) = 1.5 cycles
+
+Speedup = Memory Latency / AMAT = 10 / 1.5 ≈ 7x
+```
+
+---
+
+### Overall Performance Results
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
 | CPI | 1.82 | 1.26 | **31%** |
 | Stall Cycles | 114 | 37 | **68%** |
 | Pipeline Efficiency | 55% | 79% | **44%** |
+| SIMD Operations | 1 (ADD) | 5 (+,-,×,÷,^) | **5x** |
+| Branch Accuracy | 0% | 78.33% | **78%** |
+| SIMD Throughput | 1 op/cycle | 8 ops/cycle | **8x** |
 | Memory Access Time | 10 cycles | ~1.5 cycles | **~7x** |
 
-See [`contributions/`](contributions/) folder for detailed documentation.
-
+See [`contributions/`](contributions/) folder for detailed documentation and demo videos.
