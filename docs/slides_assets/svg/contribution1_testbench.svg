@@ -1,0 +1,35 @@
+<!-- 1. Performance Testbench -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350">
+  <rect width="800" height="350" fill="#1a1a2e"/>
+  <text x="400" y="35" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">Performance Testbench</text>
+  <text x="400" y="60" text-anchor="middle" fill="#94a3b8" font-size="14">CPI &amp; Stall Measurement: Forwarding OFF vs ON</text>
+  
+  <!-- Left: Without Forwarding -->
+  <rect x="50" y="90" width="320" height="180" rx="12" fill="#1e293b" stroke="#ef4444" stroke-width="2"/>
+  <text x="210" y="120" text-anchor="middle" fill="#ef4444" font-size="16" font-weight="bold">Forwarding OFF</text>
+  
+  <text x="100" y="160" fill="#94a3b8" font-size="14">CPI:</text>
+  <text x="300" y="160" text-anchor="end" fill="#f87171" font-size="28" font-weight="bold">1.82</text>
+  
+  <text x="100" y="195" fill="#94a3b8" font-size="14">Stall Cycles:</text>
+  <text x="300" y="195" text-anchor="end" fill="#f87171" font-size="22" font-weight="bold">114</text>
+  
+  <text x="100" y="225" fill="#94a3b8" font-size="14">Stall Rate:</text>
+  <text x="300" y="225" text-anchor="end" fill="#f87171" font-size="18">45%</text>
+  
+  <!-- Right: With Forwarding -->
+  <rect x="430" y="90" width="320" height="180" rx="12" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="590" y="120" text-anchor="middle" fill="#22c55e" font-size="16" font-weight="bold">Forwarding ON</text>
+  
+  <text x="480" y="160" fill="#94a3b8" font-size="14">CPI:</text>
+  <text x="680" y="160" text-anchor="end" fill="#4ade80" font-size="28" font-weight="bold">1.26</text>
+  
+  <text x="480" y="195" fill="#94a3b8" font-size="14">Stall Cycles:</text>
+  <text x="680" y="195" text-anchor="end" fill="#4ade80" font-size="22" font-weight="bold">37</text>
+  
+  <text x="480" y="225" fill="#94a3b8" font-size="14">Stall Rate:</text>
+  <text x="680" y="225" text-anchor="end" fill="#4ade80" font-size="18">20%</text>
+  
+  <!-- Improvement Arrow -->
+  <text x="400" y="310" text-anchor="middle" fill="#4ade80" font-size="18" font-weight="bold">31% CPI Improvement | 68% Stall Reduction</text>
+</svg>

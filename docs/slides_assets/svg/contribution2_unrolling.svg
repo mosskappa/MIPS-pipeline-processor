@@ -1,0 +1,49 @@
+<!-- 2. Hardware Unrolling -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380">
+  <rect width="800" height="380" fill="#0f172a"/>
+  <text x="400" y="35" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">Hardware Unrolling</text>
+  <text x="400" y="60" text-anchor="middle" fill="#94a3b8" font-size="14">Verilog generate: Compile-time Loop to Parallel Hardware</text>
+  
+  <!-- Software Loop -->
+  <rect x="50" y="80" width="700" height="100" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="2"/>
+  <text x="100" y="105" fill="#f59e0b" font-size="16" font-weight="bold">Software Loop (Sequential)</text>
+  <text x="700" y="105" text-anchor="end" fill="#f87171" font-size="14">8 Clock Cycles</text>
+  <g transform="translate(70, 120)">
+    <rect x="0" y="0" width="65" height="40" rx="6" fill="#3b82f6"/><text x="32" y="25" text-anchor="middle" fill="#fff" font-size="12">iter 0</text>
+    <text x="75" y="25" fill="#fff" font-size="16">→</text>
+    <rect x="90" y="0" width="65" height="40" rx="6" fill="#3b82f6"/><text x="122" y="25" text-anchor="middle" fill="#fff" font-size="12">iter 1</text>
+    <text x="165" y="25" fill="#fff" font-size="16">→</text>
+    <rect x="180" y="0" width="65" height="40" rx="6" fill="#3b82f6"/><text x="212" y="25" text-anchor="middle" fill="#fff" font-size="12">iter 2</text>
+    <text x="255" y="25" fill="#fff" font-size="16">→</text>
+    <text x="280" y="25" fill="#64748b" font-size="20">...</text>
+    <text x="305" y="25" fill="#fff" font-size="16">→</text>
+    <rect x="320" y="0" width="65" height="40" rx="6" fill="#3b82f6"/><text x="352" y="25" text-anchor="middle" fill="#fff" font-size="12">iter 6</text>
+    <text x="395" y="25" fill="#fff" font-size="16">→</text>
+    <rect x="410" y="0" width="65" height="40" rx="6" fill="#3b82f6"/><text x="442" y="25" text-anchor="middle" fill="#fff" font-size="12">iter 7</text>
+  </g>
+  
+  <!-- Generate Arrow -->
+  <rect x="350" y="195" width="100" height="35" rx="17" fill="#8b5cf6"/>
+  <text x="400" y="218" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold" font-family="monospace">generate</text>
+  <polygon points="400,235 390,245 410,245" fill="#8b5cf6"/>
+  
+  <!-- Hardware Unrolled -->
+  <rect x="50" y="260" width="700" height="100" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="100" y="285" fill="#22c55e" font-size="16" font-weight="bold">Hardware Unrolling (Parallel)</text>
+  <text x="700" y="285" text-anchor="end" fill="#4ade80" font-size="14">1 Clock Cycle</text>
+  <g transform="translate(70, 300)">
+    <rect x="0" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="37" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 0</text>
+    <rect x="85" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="122" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 1</text>
+    <rect x="170" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="207" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 2</text>
+    <rect x="255" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="292" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 3</text>
+    <rect x="340" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="377" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 4</text>
+    <rect x="425" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="462" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 5</text>
+    <rect x="510" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="547" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 6</text>
+    <rect x="595" y="0" width="75" height="40" rx="6" fill="#06b6d4"/><text x="632" y="25" text-anchor="middle" fill="#fff" font-size="11">Lane 7</text>
+  </g>
+  
+  <!-- 8x Badge -->
+  <circle cx="720" cy="220" r="35" fill="#22c55e"/>
+  <text x="720" y="215" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">8x</text>
+  <text x="720" y="233" text-anchor="middle" fill="#fff" font-size="10">Speedup</text>
+</svg>

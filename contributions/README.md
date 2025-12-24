@@ -1,0 +1,36 @@
+# My Contributions
+
+This folder contains all **9 contributions** I made to this MIPS Pipeline Processor project.
+
+## Contribution Summary
+
+| # | Contribution | Folder | Type |
+|---|-------------|--------|------|
+| 1 | [Performance Testbench](./1_performance_testbench/) | `1_performance_testbench/` | Measurement Tool |
+| 2 | [Hardware Unrolling](./2_hardware_unrolling/) | `2_hardware_unrolling/` | Technique Demo |
+| 3 | [SIMD Parallelism](./3_simd_parallelism/) | `3_simd_parallelism/` | DLP Demo |
+| 4 | [Quantitative Analysis](./4_quantitative_analysis/) | `4_quantitative_analysis/` | Performance Report |
+| 5 | [SIMD ALU Expansion](./5_simd_alu_expansion/) | `5_simd_alu_expansion/` | Full ALU (+,-,x,/,^) |
+| 6 | [Branch Prediction](./6_branch_prediction/) | `6_branch_prediction/` | 2-bit Predictor |
+| 7 | [Comprehensive Analysis](./7_comprehensive_analysis/) | `7_comprehensive_analysis/` | Combined Efficiency Analysis |
+| 8 | [Parentheses Support](./8_parentheses_support/) | `8_parentheses_support/` | Expression Parser Upgrade |
+| 9 | [CORDIC Math Functions](./9_cordic_math_functions/) | `9_cordic_math_functions/` | Graduate-Level Trigonometry |
+
+## Demo Videos
+
+Each contribution folder contains:
+- Source code (`.v` files)
+- Testbench
+- README with explanation
+- Demo video (Vivado simulation recording)
+
+## Overall Results
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| CPI | 1.82 | 1.26 | **31%** |
+| Stall Cycles | 114 | 37 | **68%** |
+| Pipeline Efficiency | 55% | 79% | **44%** |
+| SIMD Operations | 1 (ADD) | 5 (+,-,x,/,^) | **5x** |
+| Branch Accuracy | 0% (no predictor) | 78.33% | **78%** |
+| SIMD Throughput | 1 op/cycle | 8 ops/cycle | **8x** |

@@ -1,0 +1,31 @@
+# Generated files
+PRESENTATION.pdf
+PRESENTATION.html
+PRESENTATION.pptx
+PRESENTATION_*.html
+*.pdf
+
+# Personal scripts and notes
+PRESENTATION.md
+PRESENTATION_SCRIPT.md
+scripts/
+export_slides.sh
+EXPORT_TO_PPTX.md
+
+# Recording scripts (personal)
+**/錄影腳本.md
+**/recording_script.md
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Vivado files  
+*.jou
+*.log
+*.str
+.Xil/
+
+# IDE
+.vscode/
+*.swp

@@ -1,0 +1,56 @@
+<!-- 6. Branch Prediction -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380">
+  <rect width="800" height="380" fill="#0f172a"/>
+  <text x="400" y="35" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">2-bit Branch Prediction</text>
+  <text x="400" y="60" text-anchor="middle" fill="#94a3b8" font-size="14">Saturating Counter State Machine</text>
+  
+  <!-- States -->
+  <circle cx="130" cy="150" r="50" fill="#1e293b" stroke="#ef4444" stroke-width="3"/>
+  <text x="130" y="140" text-anchor="middle" fill="#ef4444" font-size="18" font-weight="bold" font-family="monospace">00</text>
+  <text x="130" y="165" text-anchor="middle" fill="#fff" font-size="10">Strongly</text>
+  <text x="130" y="178" text-anchor="middle" fill="#fff" font-size="10">Not Taken</text>
+  
+  <circle cx="290" cy="150" r="50" fill="#1e293b" stroke="#f59e0b" stroke-width="3"/>
+  <text x="290" y="140" text-anchor="middle" fill="#f59e0b" font-size="18" font-weight="bold" font-family="monospace">01</text>
+  <text x="290" y="165" text-anchor="middle" fill="#fff" font-size="10">Weakly</text>
+  <text x="290" y="178" text-anchor="middle" fill="#fff" font-size="10">Not Taken</text>
+  
+  <circle cx="510" cy="150" r="50" fill="#1e293b" stroke="#22c55e" stroke-width="3"/>
+  <text x="510" y="140" text-anchor="middle" fill="#22c55e" font-size="18" font-weight="bold" font-family="monospace">10</text>
+  <text x="510" y="165" text-anchor="middle" fill="#fff" font-size="10">Weakly</text>
+  <text x="510" y="178" text-anchor="middle" fill="#fff" font-size="10">Taken</text>
+  
+  <circle cx="670" cy="150" r="50" fill="#1e293b" stroke="#3b82f6" stroke-width="3"/>
+  <text x="670" y="140" text-anchor="middle" fill="#3b82f6" font-size="18" font-weight="bold" font-family="monospace">11</text>
+  <text x="670" y="165" text-anchor="middle" fill="#fff" font-size="10">Strongly</text>
+  <text x="670" y="178" text-anchor="middle" fill="#fff" font-size="10">Taken</text>
+  
+  <!-- Transitions (Taken - top) -->
+  <path d="M165 110 Q210 70 255 110" stroke="#4ade80" stroke-width="2" fill="none" marker-end="url(#arrow-green)"/>
+  <text x="210" y="65" text-anchor="middle" fill="#4ade80" font-size="11">Taken</text>
+  <path d="M325 110 Q400 70 475 110" stroke="#4ade80" stroke-width="2" fill="none"/>
+  <text x="400" y="65" text-anchor="middle" fill="#4ade80" font-size="11">Taken</text>
+  <path d="M545 110 Q590 70 635 110" stroke="#4ade80" stroke-width="2" fill="none"/>
+  <text x="590" y="65" text-anchor="middle" fill="#4ade80" font-size="11">Taken</text>
+  
+  <!-- Transitions (Not Taken - bottom) -->
+  <path d="M635 190 Q590 230 545 190" stroke="#f87171" stroke-width="2" fill="none"/>
+  <text x="590" y="245" text-anchor="middle" fill="#f87171" font-size="11">Not Taken</text>
+  <path d="M475 190 Q400 230 325 190" stroke="#f87171" stroke-width="2" fill="none"/>
+  <text x="400" y="245" text-anchor="middle" fill="#f87171" font-size="11">Not Taken</text>
+  <path d="M255 190 Q210 230 165 190" stroke="#f87171" stroke-width="2" fill="none"/>
+  <text x="210" y="245" text-anchor="middle" fill="#f87171" font-size="11">Not Taken</text>
+  
+  <!-- Prediction Rule -->
+  <rect x="80" y="270" width="280" height="50" rx="10" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="220" y="295" text-anchor="middle" fill="#8b5cf6" font-size="14" font-weight="bold">Prediction Rule</text>
+  <text x="220" y="312" text-anchor="middle" fill="#fff" font-size="12" font-family="monospace">MSB = 1 → Predict Taken</text>
+  
+  <!-- Accuracy -->
+  <rect x="420" y="270" width="300" height="90" rx="10" fill="#1e293b" stroke="#22c55e" stroke-width="2"/>
+  <text x="570" y="295" text-anchor="middle" fill="#22c55e" font-size="14" font-weight="bold">Prediction Accuracy</text>
+  <text x="470" y="320" fill="#fff" font-size="14">Loop Pattern:</text>
+  <text x="700" y="320" text-anchor="end" fill="#4ade80" font-size="18" font-weight="bold">90%</text>
+  <text x="470" y="345" fill="#fff" font-size="14">Average:</text>
+  <text x="700" y="345" text-anchor="end" fill="#fbbf24" font-size="18" font-weight="bold">78%</text>
+</svg>
