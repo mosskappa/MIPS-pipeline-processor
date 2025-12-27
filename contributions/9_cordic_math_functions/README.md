@@ -54,15 +54,19 @@ After n iterations:
 - `cordic.v` - 16-stage pipelined CORDIC engine
 - `tb_cordic.v` - Testbench with multiple angle verification
 
-## Test Cases
+## Test Results
 
-| Angle | Expected cos | Expected sin | Error Tolerance |
-|-------|-------------|-------------|-----------------|
-| 0 | 1.000 | 0.000 | < 0.01 |
-| 30 | 0.866 | 0.500 | < 0.01 |
-| 45 | 0.707 | 0.707 | < 0.01 |
-| 60 | 0.500 | 0.866 | < 0.01 |
-| 90 | 0.000 | 1.000 | < 0.01 |
+| Angle | Expected cos | DUT cos | Expected sin | DUT sin | Status |
+|-------|-------------|---------|-------------|---------|--------|
+| 0° | 1.0000 | 1.0001 | 0.0000 | -0.0001 | ✅ PASS |
+| 30° | 0.8660 | 0.8663 | 0.5000 | 0.5000 | ✅ PASS |
+| 45° | 0.7071 | 0.7072 | 0.7071 | 0.7072 | ✅ PASS |
+| 60° | 0.5000 | 0.4999 | 0.8660 | 0.8663 | ✅ PASS |
+| 90° | 0.0000 | -0.0002 | 1.0000 | 1.0001 | ✅ PASS |
+| -30° | 0.8660 | 0.8663 | -0.5000 | -0.4999 | ✅ PASS |
+| -90° | 0.0000 | -0.0004 | -1.0000 | -1.0001 | ✅ PASS |
+
+**All 7 tests passed! (Error < 1%)**
 
 ## How to Run (Vivado)
 

@@ -1,13 +1,13 @@
 `timescale 1ns/1ns
 
 //=============================================================================
-// CONTRIBUTION 8: Expression Parser with Parentheses & Associativity
+// CONTRIBUTION 8: Expression Parser with Parentheses & Right Associativity
 // Author: 劉俊逸 (M143140014)
 //
 // Features Verified:
-// 1. Parentheses Handling: ( ) altering precedence
+// 1. Parentheses Handling: ( ) override operator precedence
 // 2. Right Associativity: 2^3^2 = 2^9 = 512 (not 64)
-// 3. Mixed Operators: + - * / ^ ( )
+// 3. All Operations: + - * / ^
 //=============================================================================
 
 module tb_parentheses;
@@ -29,7 +29,17 @@ module tb_parentheses;
     integer tests_passed;
     integer tests_total;
     
-    // Instantiate Top
+    // Operator Encoding (aligned with contributions/8 converter.v)
+    localparam OP_ADD = 32'b000; // +
+    localparam OP_SUB = 32'b001; // -
+    localparam OP_MUL = 32'b010; // *
+    localparam OP_DIV = 32'b011; // /
+    localparam OP_EXP = 32'b100; // ^
+    localparam OP_EQ  = 32'b101; // =
+    localparam OP_LP  = 32'b110; // (
+    localparam OP_RP  = 32'b111; // )
+    
+    // Instantiate Top (lowercase clk/rst from expression_parser_top)
     expression_parser_top dut(
         .clk(clk),
         .rst(rst),
@@ -42,26 +52,28 @@ module tb_parentheses;
         .output_ack(output_ack)
     );
     
-    // Clock
+    // Clock generation
     initial begin
         clk = 0;
         forever #5 clk = ~clk;
     end
     
-    // Operator Codes for Display
-    // + (000), - (001), * (010), / (011), ^ (100), = (101), ( (110), ) (111)
-    
-    // Task to send data
+    // Task: Send input with proper handshake
     task send_input;
         input [31:0] data;
         input is_op;
         begin
+            @(posedge clk);
             input_data = data;
             is_input_operator = is_op;
             input_stb = 1;
+            
+            // Wait for acknowledgment
             wait(input_ack);
             @(posedge clk);
             input_stb = 0;
+            
+            // Wait for ack to deassert
             wait(!input_ack);
             @(posedge clk);
         end
@@ -71,12 +83,15 @@ module tb_parentheses;
         rst = 1;
         output_ack = 0;
         input_stb = 0;
+        input_data = 0;
+        is_input_operator = 0;
         tests_passed = 0;
         tests_total = 0;
         
-        #20;
+        // Hold reset
+        repeat(4) @(posedge clk);
         rst = 0;
-        #20;
+        repeat(2) @(posedge clk);
         
         $display("");
         $display("╔═══════════════════════════════════════════════════════════════════════╗");
@@ -87,21 +102,22 @@ module tb_parentheses;
         
         //---------------------------------------------------------------------
         // Test 1: Parentheses Priority
-        // Equation: 5 * ( 3 + 4 ) = 35
+        // Expression: 5 * ( 3 + 4 ) = 5 * 7 = 35
         //---------------------------------------------------------------------
         $display("Test 1: Parentheses Priority");
         $display("Formula: 5 * ( 3 + 4 )");
         $display("Expect:  5 * 7 = 35");
         
-        send_input(32'd5, 0);
-        send_input(32'b010, 1); // *
-        send_input(32'b110, 1); // (
-        send_input(32'd3, 0);
-        send_input(32'b000, 1); // +
-        send_input(32'd4, 0);
-        send_input(32'b111, 1); // )
-        send_input(32'b101, 1); // =
+        send_input(32'd5, 0);      // 5
+        send_input(OP_MUL, 1);     // *
+        send_input(OP_LP, 1);      // (
+        send_input(32'd3, 0);      // 3
+        send_input(OP_ADD, 1);     // +
+        send_input(32'd4, 0);      // 4
+        send_input(OP_RP, 1);      // )
+        send_input(OP_EQ, 1);      // =
         
+        // Wait for result
         wait(output_stb);
         tests_total = tests_total + 1;
         
@@ -109,27 +125,33 @@ module tb_parentheses;
             $display("Result:  %0d  --> [PASS]", output_data);
             tests_passed = tests_passed + 1;
         end else begin
-            $display("Result:  %0d  --> [FAIL]", output_data);
+            $display("Result:  %0d  --> [FAIL] (expected 35)", output_data);
         end
         $display("-------------------------------------------------------------------------");
         
-        output_ack = 1; #20; output_ack = 0; #20;
+        // Acknowledge result
+        @(posedge clk);
+        output_ack = 1;
+        wait(!output_stb);
+        @(posedge clk);
+        output_ack = 0;
+        repeat(5) @(posedge clk);
 
         //---------------------------------------------------------------------
         // Test 2: Right Associativity (Exponentiation)
-        // Equation: 2 ^ 3 ^ 2 = 2 ^ (3 ^ 2) = 2 ^ 9 = 512
+        // Expression: 2 ^ 3 ^ 2 = 2 ^ (3 ^ 2) = 2 ^ 9 = 512
         // Wrong (Left Assoc): (2 ^ 3) ^ 2 = 8 ^ 2 = 64
         //---------------------------------------------------------------------
         $display("Test 2: Right Associativity (Exponentiation)");
         $display("Formula: 2 ^ 3 ^ 2");
         $display("Expect:  2 ^ 9 = 512 (Right Associative)");
         
-        send_input(32'd2, 0);
-        send_input(32'b100, 1); // ^
-        send_input(32'd3, 0);
-        send_input(32'b100, 1); // ^
-        send_input(32'd2, 0);
-        send_input(32'b101, 1); // =
+        send_input(32'd2, 0);      // 2
+        send_input(OP_EXP, 1);     // ^
+        send_input(32'd3, 0);      // 3
+        send_input(OP_EXP, 1);     // ^
+        send_input(32'd2, 0);      // 2
+        send_input(OP_EQ, 1);      // =
         
         wait(output_stb);
         tests_total = tests_total + 1;
@@ -138,30 +160,35 @@ module tb_parentheses;
             $display("Result:  %0d  --> [PASS]", output_data);
             tests_passed = tests_passed + 1;
         end else if (output_data == 64) begin
-             $display("Result:  %0d  --> [FAIL] (Left Associative Detected)", output_data);
+            $display("Result:  %0d  --> [FAIL] (Left Associative - should be Right)", output_data);
         end else begin
-             $display("Result:  %0d  --> [FAIL]", output_data);
+            $display("Result:  %0d  --> [FAIL] (expected 512)", output_data);
         end
         $display("-------------------------------------------------------------------------");
 
-        output_ack = 1; #20; output_ack = 0; #20;
+        @(posedge clk);
+        output_ack = 1;
+        wait(!output_stb);
+        @(posedge clk);
+        output_ack = 0;
+        repeat(5) @(posedge clk);
 
         //---------------------------------------------------------------------
-        // Test 3: Mixed Operations & Parentheses
-        // Equation: 100 / ( 2 + 3 ) = 20
+        // Test 3: Division with Parentheses
+        // Expression: 100 / ( 2 + 3 ) = 100 / 5 = 20
         //---------------------------------------------------------------------
         $display("Test 3: Division with Parentheses");
         $display("Formula: 100 / ( 2 + 3 )");
         $display("Expect:  100 / 5 = 20");
         
-        send_input(32'd100, 0);
-        send_input(32'b011, 1); // /
-        send_input(32'b110, 1); // (
-        send_input(32'd2, 0);
-        send_input(32'b000, 1); // +
-        send_input(32'd3, 0);
-        send_input(32'b111, 1); // )
-        send_input(32'b101, 1); // =
+        send_input(32'd100, 0);    // 100
+        send_input(OP_DIV, 1);     // /
+        send_input(OP_LP, 1);      // (
+        send_input(32'd2, 0);      // 2
+        send_input(OP_ADD, 1);     // +
+        send_input(32'd3, 0);      // 3
+        send_input(OP_RP, 1);      // )
+        send_input(OP_EQ, 1);      // =
         
         wait(output_stb);
         tests_total = tests_total + 1;
@@ -170,19 +197,20 @@ module tb_parentheses;
             $display("Result:  %0d  --> [PASS]", output_data);
             tests_passed = tests_passed + 1;
         end else begin
-            $display("Result:  %0d  --> [FAIL]", output_data);
+            $display("Result:  %0d  --> [FAIL] (expected 20)", output_data);
         end
         $display("-------------------------------------------------------------------------");
         
+        // Final Summary
         $display("");
         $display("╔═══════════════════════════════════════════════════════════════════════╗");
         $display("║                        SUMMARY                                        ║");
         $display("╠═══════════════════════════════════════════════════════════════════════╣");
-        $display("║   Tests Passed: %0d / %0d                                           ║", tests_passed, tests_total);
+        $display("║   Tests Passed: %0d / %0d                                              ║", tests_passed, tests_total);
         if (tests_passed == tests_total)
-            $display("║   Status:       ALL PASSED ★★★                                  ║");
+            $display("║   Status:       ALL PASSED ★★★                                     ║");
         else
-            $display("║   Status:       FAILURES DETECTED                               ║");
+            $display("║   Status:       FAILURES DETECTED                                    ║");
         $display("╚═══════════════════════════════════════════════════════════════════════╝");
         $display("");
         

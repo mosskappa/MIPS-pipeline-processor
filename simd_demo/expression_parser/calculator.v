@@ -26,6 +26,20 @@ module calculator(
     reg [31:0] right_number;
     reg [31:0] left_number;
     
+    // Power calculation function (moved outside always block)
+    function [31:0] power;
+        input [31:0] base;
+        input [31:0] exp;
+        reg [31:0] result;
+        integer j;
+        begin
+            result = 1;
+            for (j = 0; j < exp && j < 32; j = j + 1)
+                result = result * base;
+            power = result;
+        end
+    endfunction
+    
     // Stack instantiation
     stack #(
     .WIDTH(32),
@@ -89,7 +103,9 @@ module calculator(
                 if(input_stb)
                     begin
                         if(is_input_operator === 1'b1) // input is an operator
-                                if(input_data[2] === 1'b1) state <= 1; // input is '='
+                                // CRITICAL FIX: Must check full 3 bits, not just bit 2
+                                // Old code: if(input_data[2] === 1'b1) matched EXP(100), =(101), ((110), )(111)
+                                if(input_data[2:0] === 3'b101) state <= 1; // ONLY '=' (101) ends calculation
                                 else state <= 4'd2;
                         else // input is a number
                             begin
@@ -135,12 +151,14 @@ module calculator(
                     begin
                         pop_stb <= 1'b0;
                         state <= 4'd6;
-                        if(input_data[1:0] == 2'b01)
-                            push_data <= left_number*right_number;
-                        else if(input_data[1:0] == 2'b10)
-                            push_data <= left_number+right_number;
-                        else if (input_data[1:0] == 2'b11)
-                            push_data <= left_number-right_number;
+                        case(input_data[2:0])
+                            3'b000: push_data <= left_number + right_number; // ADD
+                            3'b001: push_data <= left_number - right_number; // SUB
+                            3'b010: push_data <= left_number * right_number; // MUL
+                            3'b011: push_data <= (right_number != 0) ? (left_number / right_number) : 32'hFFFFFFFF; // DIV
+                            3'b100: push_data <= power(left_number, right_number); // EXP
+                            default: push_data <= 0;
+                        endcase
                     end
             end
             6:    // Wait for push_data get stored
