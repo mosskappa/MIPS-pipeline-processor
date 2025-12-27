@@ -16,13 +16,26 @@ A specialized testbench for measuring CPU performance metrics including CPI, IPC
 - CPI/IPC calculation
 - Pipeline efficiency analysis
 
-## Usage
+## How to Run (Vivado)
 
-### Vivado Tcl Commands
+### Complete TCL Commands
 ```tcl
-set_property top testbench_metrics_enhanced [current_fileset -simset]
+# Step 1: Close any existing simulation
+close_sim -force
+
+# Step 2: Set the testbench as top module
+set_property top testbench_metrics_enhanced [get_filesets sim_1]
+
+# Step 3: Launch simulation
 launch_simulation
-run 5000ns
+
+# Step 4: Run to completion
+run -all
+```
+
+### Quick One-Liner
+```tcl
+close_sim -force; set_property top testbench_metrics_enhanced [get_filesets sim_1]; launch_simulation; run -all
 ```
 
 ## Results (Vivado 2025.2 Simulation)

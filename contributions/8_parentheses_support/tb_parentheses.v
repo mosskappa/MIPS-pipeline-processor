@@ -1,5 +1,15 @@
 `timescale 1ns/1ns
 
+//=============================================================================
+// CONTRIBUTION 8: Expression Parser with Parentheses & Associativity
+// Author: 劉俊逸 (M143140014)
+//
+// Features Verified:
+// 1. Parentheses Handling: ( ) altering precedence
+// 2. Right Associativity: 2^3^2 = 2^9 = 512 (not 64)
+// 3. Mixed Operators: + - * / ^ ( )
+//=============================================================================
+
 module tb_parentheses;
     reg clk;
     reg rst;
@@ -14,6 +24,10 @@ module tb_parentheses;
     wire output_stb;
     wire [31:0] output_data;
     reg output_ack;
+    
+    // Metrics
+    integer tests_passed;
+    integer tests_total;
     
     // Instantiate Top
     expression_parser_top dut(
@@ -33,6 +47,9 @@ module tb_parentheses;
         clk = 0;
         forever #5 clk = ~clk;
     end
+    
+    // Operator Codes for Display
+    // + (000), - (001), * (010), / (011), ^ (100), = (101), ( (110), ) (111)
     
     // Task to send data
     task send_input;
@@ -54,14 +71,28 @@ module tb_parentheses;
         rst = 1;
         output_ack = 0;
         input_stb = 0;
+        tests_passed = 0;
+        tests_total = 0;
+        
         #20;
         rst = 0;
         #20;
         
-        // Equation 1: 5 * ( 3 + 4 ) = 35
-        // New Encoding: * (010), + (000), ( (110), ) (111), = (101)
+        $display("");
+        $display("╔═══════════════════════════════════════════════════════════════════════╗");
+        $display("║     CONTRIBUTION 8: PARENTHESES & ASSOCIATIVITY PARSER                ║");
+        $display("║     Author: 劉俊逸 (M143140014)                                       ║");
+        $display("╚═══════════════════════════════════════════════════════════════════════╝");
+        $display("");
         
-        $display("Test 1: 5 * ( 3 + 4 )");
+        //---------------------------------------------------------------------
+        // Test 1: Parentheses Priority
+        // Equation: 5 * ( 3 + 4 ) = 35
+        //---------------------------------------------------------------------
+        $display("Test 1: Parentheses Priority");
+        $display("Formula: 5 * ( 3 + 4 )");
+        $display("Expect:  5 * 7 = 35");
+        
         send_input(32'd5, 0);
         send_input(32'b010, 1); // *
         send_input(32'b110, 1); // (
@@ -72,14 +103,27 @@ module tb_parentheses;
         send_input(32'b101, 1); // =
         
         wait(output_stb);
-        $display("Result: %d (Expected 35)", output_data);
-        if (output_data == 35) $display("PASS"); else $display("FAIL");
+        tests_total = tests_total + 1;
+        
+        if (output_data == 35) begin
+            $display("Result:  %0d  --> [PASS]", output_data);
+            tests_passed = tests_passed + 1;
+        end else begin
+            $display("Result:  %0d  --> [FAIL]", output_data);
+        end
+        $display("-------------------------------------------------------------------------");
         
         output_ack = 1; #20; output_ack = 0; #20;
 
-        // Equation 2: 2 ^ 3 ^ 2 (Right Associative) -> 2 ^ 9 = 512
-        // EXP = 100 (4)
-        $display("Test 2: 2 ^ 3 ^ 2");
+        //---------------------------------------------------------------------
+        // Test 2: Right Associativity (Exponentiation)
+        // Equation: 2 ^ 3 ^ 2 = 2 ^ (3 ^ 2) = 2 ^ 9 = 512
+        // Wrong (Left Assoc): (2 ^ 3) ^ 2 = 8 ^ 2 = 64
+        //---------------------------------------------------------------------
+        $display("Test 2: Right Associativity (Exponentiation)");
+        $display("Formula: 2 ^ 3 ^ 2");
+        $display("Expect:  2 ^ 9 = 512 (Right Associative)");
+        
         send_input(32'd2, 0);
         send_input(32'b100, 1); // ^
         send_input(32'd3, 0);
@@ -88,15 +132,28 @@ module tb_parentheses;
         send_input(32'b101, 1); // =
         
         wait(output_stb);
-        $display("Result: %d (Expected 512)", output_data);
-        if (output_data == 512) $display("PASS - Right Associativity Verified"); 
-        else $display("FAIL - Got %0d (Likely Left Associative if 64)", output_data);
+        tests_total = tests_total + 1;
+
+        if (output_data == 512) begin
+            $display("Result:  %0d  --> [PASS]", output_data);
+            tests_passed = tests_passed + 1;
+        end else if (output_data == 64) begin
+             $display("Result:  %0d  --> [FAIL] (Left Associative Detected)", output_data);
+        end else begin
+             $display("Result:  %0d  --> [FAIL]", output_data);
+        end
+        $display("-------------------------------------------------------------------------");
 
         output_ack = 1; #20; output_ack = 0; #20;
 
-        // Equation 3: 100 / ( 2 + 3 ) = 20
-        // DIV = 011 (3), + = 000 (0)
-        $display("Test 3: 100 / ( 2 + 3 )");
+        //---------------------------------------------------------------------
+        // Test 3: Mixed Operations & Parentheses
+        // Equation: 100 / ( 2 + 3 ) = 20
+        //---------------------------------------------------------------------
+        $display("Test 3: Division with Parentheses");
+        $display("Formula: 100 / ( 2 + 3 )");
+        $display("Expect:  100 / 5 = 20");
+        
         send_input(32'd100, 0);
         send_input(32'b011, 1); // /
         send_input(32'b110, 1); // (
@@ -107,8 +164,27 @@ module tb_parentheses;
         send_input(32'b101, 1); // =
         
         wait(output_stb);
-        $display("Result: %d (Expected 20)", output_data);
-        if (output_data == 20) $display("PASS"); else $display("FAIL");
+        tests_total = tests_total + 1;
+
+        if (output_data == 20) begin
+            $display("Result:  %0d  --> [PASS]", output_data);
+            tests_passed = tests_passed + 1;
+        end else begin
+            $display("Result:  %0d  --> [FAIL]", output_data);
+        end
+        $display("-------------------------------------------------------------------------");
+        
+        $display("");
+        $display("╔═══════════════════════════════════════════════════════════════════════╗");
+        $display("║                        SUMMARY                                        ║");
+        $display("╠═══════════════════════════════════════════════════════════════════════╣");
+        $display("║   Tests Passed: %0d / %0d                                           ║", tests_passed, tests_total);
+        if (tests_passed == tests_total)
+            $display("║   Status:       ALL PASSED ★★★                                  ║");
+        else
+            $display("║   Status:       FAILURES DETECTED                               ║");
+        $display("╚═══════════════════════════════════════════════════════════════════════╝");
+        $display("");
         
         $finish;
     end

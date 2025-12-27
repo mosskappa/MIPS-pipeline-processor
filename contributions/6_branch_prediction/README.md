@@ -45,6 +45,23 @@ ST = Strongly Taken
 Single-bit predictors fail on loop exits (always mispredicts twice).
 2-bit saturating counters require 2 consecutive wrong predictions to change state.
 
+## How to Run (Vivado)
+
+### Complete TCL Commands
+```tcl
+# Step 1: Close any existing simulation
+close_sim -force
+
+# Step 2: Set the testbench as top module
+set_property top tb_branch_predictor [get_filesets sim_1]
+
+# Step 3: Launch simulation
+launch_simulation
+
+# Step 4: Run to completion
+run -all
+```
+
 ## Demo Video
 
 ### Branch Predictor Accuracy Test

@@ -65,10 +65,20 @@ After n iterations:
 | 90 | 0.000 | 1.000 | < 0.01 |
 
 ## How to Run (Vivado)
+
+### Complete TCL Commands
 ```tcl
-set_property top tb_cordic [current_fileset -simset]
+# Step 1: Close any existing simulation
+close_sim -force
+
+# Step 2: Set the testbench as top module
+set_property top tb_cordic [get_filesets sim_1]
+
+# Step 3: Launch simulation
 launch_simulation
-run 10000ns
+
+# Step 4: Run to completion
+run -all
 ```
 
 Expected output:

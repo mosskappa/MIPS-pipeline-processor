@@ -84,9 +84,19 @@ Hit Rate = 7/8 = 87.5%
 ```
 
 ## How to Run (Vivado)
+
+### Complete TCL Commands
 ```tcl
-set_property top tb_l1_cache [current_fileset -simset]
+# Step 1: Close any existing simulation
+close_sim -force
+
+# Step 2: Set the testbench as top module
+set_property top tb_l1_cache [get_filesets sim_1]
+
+# Step 3: Launch simulation
 launch_simulation
+
+# Step 4: Run to completion (cache needs longer simulation)
 run 50000ns
 ```
 
