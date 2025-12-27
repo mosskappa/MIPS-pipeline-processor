@@ -189,12 +189,7 @@ module converter(
                     begin
                         // Priority Check
                         // Logic: IF (Input Prio <= Stack Prio) THEN Pop Stack
-                        // EXCEPTION: Expect Right Associativity for EXP (100).
-                        // If Input==EXP and Stack==EXP, we Push (Right Assoc).
-                        
-                        reg [1:0] in_prio, stack_prio;
-                        in_prio = get_priority(input_data[2:0]);
-                        stack_prio = get_priority(pop_data[2:0]);
+                        // Right Associativity for EXP: If both are ^, push instead of pop
                         
                         // Right Associativity for EXP
                         if (input_data[2:0] == 3'b100 && pop_data[2:0] == 3'b100) begin
@@ -203,7 +198,7 @@ module converter(
                              input_ack <= 1'b1;
                              state <= 3'd3;   
                         end
-                        else if(in_prio <= stack_prio)
+                        else if(get_priority(input_data[2:0]) <= get_priority(pop_data[2:0]))
                             begin
                                 output_data <= pop_data;        
                                 pop_stb <= 1'b1;
@@ -224,6 +219,7 @@ module converter(
                 begin
                     input_ack <= 1'b0;
                     push_stb <= 1'b0;
+                    pop_stb <= 1'b0;  // CRITICAL FIX: Must clear pop_stb!
                     state <= 3'd0;
                 end
             4: // Flush the stack before push "=" or empty before push new stack

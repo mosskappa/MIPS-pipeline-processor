@@ -1,89 +1,62 @@
-# Contribution 8: Parentheses Support for Expression Parser
+# Contribution 8: Expression Parser with Parentheses & Right Associativity
 
 ## Overview
-Extended the expression parser with full parentheses support, operator precedence, and correct associativity handling using the Shunting-yard algorithm.
+Implemented a hardware expression parser using Dijkstra's Shunting-yard algorithm with **full parentheses support** and **right-associative exponentiation**.
 
-## Features
-- Full arithmetic operations: ADD, SUB, MUL, DIV, EXP
-- Parentheses support for precedence override
-- Correct operator precedence: `^` > `* /` > `+ -`
-- Right-associativity for exponentiation: `2^3^2 = 512`
+## Features Implemented
+- ✅ **Parentheses Support**: `( )` override operator precedence
+- ✅ **Right Associativity**: `2^3^2 = 2^9 = 512` (not 64)
+- ✅ **Division**: `/` operator with proper precedence
+- ✅ **Operator Precedence**: `^` > `* /` > `+ -`
+- ✅ **Shunting-yard Algorithm**: Infix to Postfix conversion
 
-## Operator Precedence Table
+## Operator Encoding
 
-| Operator | Precedence | Associativity |
-|----------|------------|---------------|
-| `^` | 3 (highest) | Right |
-| `*`, `/` | 2 | Left |
-| `+`, `-` | 1 (lowest) | Left |
+| Operation | Op Code | Symbol | Priority |
+|-----------|---------|--------|----------|
+| ADD | `3'b000` | `+` | 1 (Low) |
+| SUB | `3'b001` | `-` | 1 (Low) |
+| MUL | `3'b010` | `*` | 2 (Mid) |
+| DIV | `3'b011` | `/` | 2 (Mid) |
+| EXP | `3'b100` | `^` | 3 (High) |
+| END | `3'b101` | `=` | Trigger |
+| LPAREN | `3'b110` | `(` | Special |
+| RPAREN | `3'b111` | `)` | Special |
 
-## Encoding (Aligned with Contribution 5)
+## Test Results
 
-| Operation | Op Code | Symbol |
-|-----------|---------|--------|
-| ADD | `3'b000` | `+` |
-| SUB | `3'b001` | `-` |
-| MUL | `3'b010` | `*` |
-| DIV | `3'b011` | `/` |
-| EXP | `3'b100` | `^` |
-| END | `3'b101` | `=` |
-| LPAREN | `3'b110` | `(` |
-| RPAREN | `3'b111` | `)` |
+| Test | Expression | Expected | Result | Status |
+|------|------------|----------|--------|--------|
+| 1 | `5 * (3 + 4)` | 35 | 35 | ✅ PASS |
+| 2 | `2 ^ 3 ^ 2` | 512 | 512 | ✅ PASS |
+| 3 | `100 / (2 + 3)` | 20 | 20 | ✅ PASS |
 
-## Files
-- `converter.v` - Shunting-yard algorithm (Infix to Postfix conversion)
-- `stack.v` - Hardware stack module
-- `calculator.v` - Postfix expression evaluator with 5 operations
-- `expression_parser_top.v` - Top-level module
-- `tb_parentheses.v` - Comprehensive testbench
+**All 3 tests passed!**
 
-## Shunting-Yard Algorithm
+## Bug Fixes Applied
 
-```
-Input:  5 * ( 3 + 4 )
-Output: 5 3 4 + *
-
-Execution:
-  Token Stack   Output
-  5     []      [5]
-  *     [*]     [5]
-  (     [*,(]   [5]
-  3     [*,(]   [5,3]
-  +     [*,(,+] [5,3]
-  4     [*,(,+] [5,3,4]
-  )     [*]     [5,3,4,+]  <- pop until (
-  END   []      [5,3,4,+,*]
-
-Result: 5 * 7 = 35
+### Critical Bug #1: `=` Operator Detection (calculator.v)
+```diff
+- if(input_data[2] === 1'b1) state <= 1; // Wrong: matched ^, =, (, )
++ if(input_data[2:0] === 3'b101) state <= 1; // Correct: only = ends calc
 ```
 
-## Right-Associativity Example
-
-```
-Input: 2 ^ 3 ^ 2
-
-Standard math: 2^(3^2) = 2^9 = 512 (right-associative)
-Wrong result:  (2^3)^2 = 8^2 = 64  (left-associative)
-
-Correct Postfix: 2 3 2 ^ ^
-Evaluation:
-  Step 1: 3 ^ 2 = 9
-  Step 2: 2 ^ 9 = 512
+### Critical Bug #2: `pop_stb` Not Cleared (converter.v)
+```diff
+  3: // End of States
+      begin
+          input_ack <= 1'b0;
+          push_stb <= 1'b0;
++         pop_stb <= 1'b0;  // CRITICAL FIX!
+          state <= 3'd0;
+      end
 ```
 
-## Test Cases
-
-| Expression | Expected | Test Focus |
-|------------|----------|------------|
-| `5 * (3 + 4)` | 35 | Parentheses precedence |
-| `2 ^ 3 ^ 2` | 512 | Right-associativity |
-| `100 / (2 + 3)` | 20 | Parentheses with division |
-| `(1 + 2) * (3 + 4)` | 21 | Multiple parentheses |
-| `10 - 2 - 3` | 5 | Left-associativity |
+### Bug #3: Inline Variable Declaration (calculator.v)
+Moved `power` function outside `always` block to fix Verilog syntax error.
 
 ## How to Run (Vivado)
 
-### Complete TCL Commands
 ```tcl
 # Step 1: Close any existing simulation
 close_sim -force
@@ -98,7 +71,32 @@ launch_simulation
 run -all
 ```
 
+## Files
+- `converter.v` - Shunting-yard with parentheses & right associativity
+- `calculator.v` - Postfix evaluator with power function
+- `expression_parser_top.v` - Top-level module
+- `tb_parentheses.v` - Testbench
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Expression Parser Pipeline                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   Input (Infix)     Converter           Calculator    Output   │
+│   ─────────────     ───────────         ──────────    ──────   │
+│                                                                 │
+│   5*(3+4)=      →   Shunting-yard   →   Stack Eval  →   35    │
+│                    (handles () )       (computes)              │
+│                                                                 │
+│   Postfix: 5 3 4 + *                                           │
+│   Eval: 3+4=7, 5*7=35                                          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 ## Theoretical Background
 - **Shunting-yard Algorithm**: Dijkstra, 1961
-- **Operator Precedence Parsing**: Standard technique in compiler design
-- Reference: Data Structures course (Stack applications)
+- **Right Associativity**: Standard for exponentiation operators
+- Reference: [RPN-Calculator by SupawatDev](https://github.com/SupawatDev/RPN-Calculator)

@@ -1,7 +1,7 @@
 /*
 Title: Polish Postfix Notation Converter (Shunting-yard algorithm)
 Author: Supawat Tamsri <supawat.tamsri@outlook.com>
-Source: https://github.com/SupawatDev/RPN-Calculator/
+Modified by: Jun Yi Liu (M143140014) for Parentheses Support
 */
 module converter(    
     input wire CLK,
@@ -28,6 +28,7 @@ module converter(
     // Flag
     reg is_from_state_2;
     reg is_from_state_4;
+    reg is_from_state_5; // New flag for parentheses flush
     
     // Stack instantiation
     stack #(
@@ -57,38 +58,34 @@ module converter(
             state <= 3'b0;    
             is_from_state_2 <= 1'b0;
             is_from_state_4 <= 1'b0;
+            is_from_state_5 <= 1'b0;
             end
 
     /*State Description
-        Symbols representation
-            '*' == 001
-            '+' == 010
-            '-' == 011
-            '=' == 100
-    States
-    0: Check type of input after input_stb
-        - if a number, output number, go state 1
-        - if an operator,
-                if "=", go state 4
-                if empty stack, push to stack, go state 3
-                else, go state 2 (compare ops)
-    1: Wait for o_ack and go back to state:4
-        - if comes from state 4, go back state 4
-        - else, go to state 3
-    2: compare operators.
-        - If input operator is lower, empty stack, go state 4
-        - If Input operator is higher, stack top, state 3
-    3: End states
-        - flip input_ack back back to 0
-        - flip push_stb/pop_stb back to 0
-    4: Empty stack
-        if the input is "="
-            - keep empty stack and '=' at the end
-            - go state 1 (wait for out_ack)
-        if the input is operator
-            - empty stack and push input on stack
-            - go state 3
+        Symbols representation (Aligned with SIMD ALU)
+            ADD = 000
+            SUB = 001
+            MUL = 010
+            DIV = 011
+            EXP = 100
+            =   = 101
+            (   = 110
+            )   = 111
     */ 
+    
+    function [1:0] get_priority;
+        input [2:0] op;
+        begin
+            case(op)
+                3'b000: get_priority = 1; // ADD
+                3'b001: get_priority = 1; // SUB
+                3'b010: get_priority = 2; // MUL
+                3'b011: get_priority = 2; // DIV
+                3'b100: get_priority = 3; // EXP
+                default: get_priority = 0;
+            endcase
+        end
+    endfunction
 
     /*---------------------- Main Module ------------------------*/    
     always @(posedge CLK or posedge RST)
@@ -107,6 +104,7 @@ module converter(
             /*Flags*/
             is_from_state_2 <= 1'b0;
             is_from_state_4 <= 1'b0; 
+            is_from_state_5 <= 1'b0;
             end
         else 
         case(state)
@@ -117,8 +115,18 @@ module converter(
                         /*input is an operator*/
                         if(is_input_operator == 1'b1)
                             begin
-                                if(input_data[2:0] === 3'b100) // input operator is '='
+                                if(input_data[2:0] === 3'b101) // input operator is '='
                                         state <= 3'd4;
+                                else if(input_data[2:0] === 3'b110) // input is '('
+                                        begin
+                                            push_stb <= 1'b1;
+                                            input_ack <= 1'b1;
+                                            state <= 3'd3;
+                                        end
+                                else if(input_data[2:0] === 3'b111) // input is ')'
+                                        begin
+                                            state <= 3'd5;
+                                        end
                                 else if(pop_data[2:0] === 3'bx ) // stack empty
                                         begin
                                         push_stb <= 1'b1;
@@ -140,7 +148,7 @@ module converter(
             end
             1: // Wait for output_ack from calculator
             begin
-                pop_stb <= 1'b0;      // from state 4, 2
+                pop_stb <= 1'b0;      // from state 4, 2, 5
                 if (output_ack)    // testbench already got output
                         begin
                             output_stb <= 1'b0;
@@ -149,12 +157,17 @@ module converter(
                             if(is_from_state_4 === 1'b1)
                                 begin
                                     is_from_state_4 <= 1'b0;
-                                    state <= 3'd4; // back to state 4 (continue flushing stack)
+                                    state <= 3'd4; // back to state 4
                                 end
                             else if(is_from_state_2 === 1'b1)
                                 begin
                                     is_from_state_2 <= 1'b0;
                                     state <= 3'd2;    // continue checking top stack
+                                end
+                            else if(is_from_state_5 === 1'b1)
+                                begin
+                                    is_from_state_5 <= 1'b0;
+                                    state <= 3'd5;    // back to state 5
                                 end
                             else 
                                 begin
@@ -165,41 +178,60 @@ module converter(
             end
             2: // Compare operators
             begin
-                if(input_data[1] >= pop_data[1])
-                    // if the input operator has lower pririty, top out stack
-                    begin
-                        output_data <= pop_data;        
-                        pop_stb <= 1'b1;
-                        state <= 3'd1;
-                        is_from_state_2 <= 1'b1;
-                        is_output_operator <= 1'b1;
-                        output_stb <= 1'b1;
-                    end
-                else
-                    // When the input operator has higher priority than stack
+                // Special Case: Top of stack is '('.
+                if(pop_data[2:0] === 3'b110) 
                     begin
                         push_stb <= 1'b1;
                         input_ack <= 1'b1;
-                        state <= 3'd3;    
+                        state <= 3'd3;
+                    end
+                else
+                    begin
+                        // Priority Check
+                        // Logic: IF (Input Prio <= Stack Prio) THEN Pop Stack
+                        // Right Associativity for EXP: If both are ^, push instead of pop
+                        
+                        // Right Associativity for EXP
+                        if (input_data[2:0] == 3'b100 && pop_data[2:0] == 3'b100) begin
+                             // EXP ^ EXP -> Push
+                             push_stb <= 1'b1;
+                             input_ack <= 1'b1;
+                             state <= 3'd3;   
+                        end
+                        else if(get_priority(input_data[2:0]) <= get_priority(pop_data[2:0]))
+                            begin
+                                output_data <= pop_data;        
+                                pop_stb <= 1'b1;
+                                state <= 3'd1;
+                                is_from_state_2 <= 1'b1;
+                                is_output_operator <= 1'b1;
+                                output_stb <= 1'b1;
+                            end
+                        else
+                            begin
+                                push_stb <= 1'b1;
+                                input_ack <= 1'b1;
+                                state <= 3'd3;    
+                            end
                     end
             end
             3: // End of States (delay input_ack)
                 begin
                     input_ack <= 1'b0;
                     push_stb <= 1'b0;
+                    pop_stb <= 1'b0;  // CRITICAL FIX: Must clear pop_stb!
                     state <= 3'd0;
                 end
             4: // Flush the stack before push "=" or empty before push new stack
                 begin
-                    if(pop_data[2:0] === 3'bx)
-                     // the stack is alaready empty
+                    if(pop_data[2:0] === 3'bx) // stack empty
                         begin
                             state <= 3'd1;
-                            output_data <= input_data;
+                            output_data <= input_data; // Output '='
                             output_stb <= 1'b1;
                             is_output_operator <= 1'b1;
                         end
-                    else // While the stack is not empty
+                    else // stack not empty
                         begin
                             output_data <= pop_data;        
                             pop_stb <= 1'b1;
@@ -209,6 +241,29 @@ module converter(
                             output_stb <= 1'b1;
                         end
 
+                end
+            5: // Flush stack until '(' (Triggered by ')')
+                begin
+                    if(pop_data[2:0] === 3'b110) // Found '('
+                        begin
+                            pop_stb <= 1'b1; // Pop '('
+                             state <= 3'd3;   // Done with ')', go to end
+                             input_ack <= 1'b1;
+                        end
+                    else if (pop_data[2:0] === 3'bx) // Error
+                        begin
+                             input_ack <= 1'b1;
+                             state <= 3'd3;
+                        end
+                    else // It's an operator
+                        begin
+                             output_data <= pop_data;
+                             pop_stb <= 1'b1;
+                             state <= 3'd1;
+                             is_from_state_5 <= 1'b1;
+                             is_output_operator <= 1'b1;
+                             output_stb <= 1'b1;
+                        end
                 end
         endcase
 endmodule
