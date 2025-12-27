@@ -160,7 +160,7 @@ style: |
 Computer Architecture, Fall 2025  
 Prof. Katherine Shu-Min Li
 
-Dec 27, 2025
+Dec 28, 2025
 
 
 ---
@@ -250,6 +250,18 @@ Key features:
 - `converter.v` - Shunting-yard expression parser
 - `cordic.v` - 16-stage CORDIC pipeline
 - `l1_data_cache.v` - Direct-mapped L1 cache
+
+---
+
+## Demo Videos
+
+| Demo | Link |
+|------|------|
+| Forwarding | [▶ Play](https://github.com/mosskappa/MIPS-pipeline-processor/raw/main/contributions/1_performance_testbench/cpi_with_forwarding.mp4) |
+| Branch Prediction | [▶ Play](https://github.com/mosskappa/MIPS-pipeline-processor/raw/main/contributions/6_branch_prediction/branch_predictor_demo.mp4) |
+| CORDIC | [▶ Play](https://github.com/mosskappa/MIPS-pipeline-processor/raw/main/contributions/9_cordic_math_functions/cordic_demo.mp4) |
+| L1 Cache | [▶ Play](https://github.com/mosskappa/MIPS-pipeline-processor/raw/main/contributions/10_cache_memory_hierarchy/cache_demo.mp4) |
+| Integrated | [▶ Play](https://github.com/mosskappa/MIPS-pipeline-processor/raw/main/contributions/11_integrated_processor/integrated_analysis_demo.mp4) |
 
 ---
 
@@ -407,14 +419,14 @@ module forwarding_EXE (src1_EXE, src2_EXE, ST_src_EXE, dest_MEM, dest_WB, WB_EN_
   always @ ( * ) begin
     {val1_sel, val2_sel, ST_val_sel} <= 0;
 
-    if (WB_EN_MEM && ST_src_EXE == dest_MEM) ST_val_sel <= 2'd1;
-    else if (WB_EN_WB && ST_src_EXE == dest_WB) ST_val_sel <= 2'd2;
+    if (WB_EN_MEM && ST_src_EXE == dest_MEM) ST_val_sel <= 2'b01;
+    else if (WB_EN_WB && ST_src_EXE == dest_WB) ST_val_sel <= 2'b10;
 
-    if (WB_EN_MEM && src1_EXE == dest_MEM) val1_sel <= 2'd1;
-    else if (WB_EN_WB && src1_EXE == dest_WB) val1_sel <= 2'd2;
+    if (WB_EN_MEM && src1_EXE == dest_MEM) val1_sel <= 2'b01;
+    else if (WB_EN_WB && src1_EXE == dest_WB) val1_sel <= 2'b10;
 
-    if (WB_EN_MEM && src2_EXE == dest_MEM) val2_sel <= 2'd1;
-    else if (WB_EN_WB && src2_EXE == dest_WB) val2_sel <= 2'd2;
+    if (WB_EN_MEM && src2_EXE == dest_MEM) val2_sel <= 2'b01;
+    else if (WB_EN_WB && src2_EXE == dest_WB) val2_sel <= 2'b10;
   end
 endmodule // forwarding_EXE
 ```
@@ -642,15 +654,24 @@ Interpretation:
 
 **Hardware expression parser** with parentheses support and right-associativity
 
-| Operation | Op Code | Symbol | Priority |
-|-----------|---------|--------|----------|
-| ADD | `3'b000` | `+` | 1 (Low) |
-| SUB | `3'b001` | `-` | 1 (Low) |
-| MUL | `3'b010` | `*` | 2 (Mid) |
-| DIV | `3'b011` | `/` | 2 (Mid) |
-| EXP | `3'b100` | `^` | 3 (High) |
-| LPAREN | `3'b110` | `(` | Special |
-| RPAREN | `3'b111` | `)` | Special |
+| Operation | Op Code | Priority |
+|-----------|---------|----------|
+| `+` `-` | `3'b000`, `3'b001` | 1 (Low) |
+| `*` `/` | `3'b010`, `3'b011` | 2 (Mid) |
+| `^` | `3'b100` | 3 (High, Right-Assoc) |
+| `(` `)` | `3'b110`, `3'b111` | Special |
+
+```verilog
+// Priority comparison for operator precedence
+function [1:0] get_priority(input [2:0] op);
+    case (op)
+        3'b000, 3'b001: get_priority = 2'b01;  // + -
+        3'b010, 3'b011: get_priority = 2'b10;  // * /
+        3'b100:         get_priority = 2'b11;  // ^
+        default:        get_priority = 2'b00;
+    endcase
+endfunction
+```
 
 
 ---
@@ -696,22 +717,23 @@ Interpretation:
 
 ## CORDIC Algorithm
 
+**Key Insight**: `2^(-i)` = **Right Shift by i bits** (No multiplier needed!)
+
+```verilog
+// CORDIC iteration - shift-add only, no multiplier!
+always @(posedge clk) begin
+    if (z[i] >= 0) begin  // d[i] = +1
+        x[i+1] <= x[i] - (y[i] >>> i);  // >>> = arithmetic right shift
+        y[i+1] <= y[i] + (x[i] >>> i);
+        z[i+1] <= z[i] - atan_table[i];
+    end else begin        // d[i] = -1
+        x[i+1] <= x[i] + (y[i] >>> i);
+        y[i+1] <= y[i] - (x[i] >>> i);
+        z[i+1] <= z[i] + atan_table[i];
+    end
+end
+// After 16 iterations: cos = x[16], sin = y[16]
 ```
-Initial vector: (x0, y0) = (1/K, 0), where K = 1.647
-
-Iteration:
-  x[i+1] = x[i] - d[i] * y[i] * 2^(-i)
-  y[i+1] = y[i] + d[i] * x[i] * 2^(-i)
-  z[i+1] = z[i] - d[i] * arctan(2^(-i))
-
-where d[i] = sign(z[i])
-
-After n iterations:
-  cos(theta) = x[n]
-  sin(theta) = y[n]
-```
-
-**No Multipliers**: Only shift-add operations!
 
 
 ---
@@ -746,15 +768,17 @@ After n iterations:
 | Block Size | 32 bytes (8 words) |
 | Number of Blocks | 256 |
 | Mapping | Direct-Mapped |
-| Write Policy | Write-Back, Write-Allocate |
 
-### Address Breakdown (32-bit)
-```
-+-------------------+-------------+---------------+
-|      Tag (19b)    | Index (8b)  | Offset (5b)   |
-+-------------------+-------------+---------------+
-|  31          13   |   12     5  |   4        0  |
-+-------------------+-------------+---------------+
+```verilog
+// Address breakdown: | Tag (19b) | Index (8b) | Offset (5b) |
+wire [18:0] tag    = addr[31:13];
+wire [7:0]  index  = addr[12:5];
+wire [4:0]  offset = addr[4:0];
+
+// Hit detection: valid bit set AND tag matches
+wire hit = valid[index] && (tags[index] == tag);
+
+// AMAT = 1 + (miss_rate * 10) = 1.28 cycles (97.22% hit rate)
 ```
 
 
