@@ -1,87 +1,53 @@
 # Contribution 11: Integrated Processor Performance Analysis
 
 ## Overview
-這是一個 **綜合性能分析**，展示將 Contributions 1-10 的所有優化整合後的 **累積加速效果**。
+Comprehensive performance analysis demonstrating the cumulative speedup achieved by integrating all optimizations from Contributions 1-10.
 
-## 整合的優化技術
+## Integrated Optimization Techniques
 
-| # | 優化技術 | 個別效果 |
-|---|----------|----------|
-| 1 | Data Forwarding | CPI: 2.5 → 1.0 (**2.5x**) |
-| 6 | Branch Prediction | 85% 準確率 |
-| 10 | L1 Cache | 98% hit rate (**8.66x memory speedup**) |
+| # | Optimization | Individual Impact |
+|---|-------------|-------------------|
+| 1 | Data Forwarding | CPI: 1.82 → 1.26 (**31% reduction**) |
+| 6 | Branch Prediction | 78.33% prediction accuracy |
+| 7 | Synergy Analysis | Combined 1.50x speedup |
+| 10 | L1 Cache | 97.22% hit rate (**7.81x memory speedup**) |
 | 3/5 | SIMD ALU | 8-lane parallel (**8x throughput**) |
 
-## 性能對比
+## Test Configuration
 
-### Baseline（無優化）
-```
-• CPI = 2.5（data hazard 造成 stall）
-• 記憶體存取 = 100 cycles（直接讀 RAM）
-• SIMD = 無（8 個運算要跑 8 次）
-```
+**Environment**: Vivado 2025.2 Behavioral Simulation
 
-### Optimized（全部優化）
-```
-• Forwarding: CPI = 1.0（消除 stall）
-• Branch Prediction: 85% 猜對率
-• L1 Cache: 98% hit，只要 1 cycle
-• SIMD: 8 個運算同時完成
-```
+### Workload Scenarios
+| Scenario | Instructions | Branches | Memory Ops | SIMD Ops |
+|----------|-------------|----------|------------|----------|
+| Compute-Intensive | 10,000 | 500 | 2,000 | 3,000 |
+| Memory-Intensive | 10,000 | 1,000 | 5,000 | 1,000 |
+| Branch-Heavy | 10,000 | 3,000 | 1,000 | 500 |
+| Balanced | 10,000 | 1,500 | 2,500 | 2,000 |
 
-## 測試結果
+## Results
 
-### Scenario 1: Compute-Intensive (Matrix Multiply)
-```
-Instructions: 10,000 (Branches: 500, Memory: 2,000, SIMD: 3,000)
-Baseline:  249,000 cycles
-Optimized:  15,585 cycles
-SPEEDUP:    15.98x ✅
-```
+| Workload Type | Baseline (cycles) | Optimized (cycles) | Speedup |
+|--------------|-------------------|--------------------|---------| 
+| Compute-Intensive | 249,000 | 15,585 | **15.98x** |
+| Memory-Intensive | 533,000 | 17,350 | **30.72x** |
+| Branch-Heavy | 129,000 | 13,030 | **9.90x** |
+| Balanced | 291,000 | 15,625 | **18.62x** |
 
-### Scenario 2: Memory-Intensive (Data Processing)
-```
-Instructions: 10,000 (Branches: 1,000, Memory: 5,000, SIMD: 1,000)
-Baseline:  533,000 cycles
-Optimized:  17,350 cycles
-SPEEDUP:    30.72x ✅
-```
+### Overall Performance Range: **10x - 31x Speedup**
 
-### Scenario 3: Branch-Heavy (Control Flow)
-```
-Instructions: 10,000 (Branches: 3,000, Memory: 1,000, SIMD: 500)
-Baseline:  129,000 cycles
-Optimized:  13,030 cycles
-SPEEDUP:     9.90x ✅
-```
+## Why Memory-Intensive Benefits Most
 
-### Scenario 4: Balanced (Typical Application)
-```
-Instructions: 10,000 (Branches: 1,500, Memory: 2,500, SIMD: 2,000)
-Baseline:  291,000 cycles
-Optimized:  15,625 cycles
-SPEEDUP:    18.62x ✅
-```
+**Memory Wall Problem**:
+- Without Cache: 100 cycles/access × 5,000 accesses = 500,000 cycles
+- With L1 Cache: 1.2 cycles/access × 5,000 accesses = 6,000 cycles
+- **Cache alone reduces 494,000 cycles!**
 
-## 綜合加速效果
-
-```
-╔════════════════════════════════════════════════════════════════╗
-║              CUMULATIVE OPTIMIZATION IMPACT                     ║
-╠════════════════════════════════════════════════════════════════╣
-║  Workload Type        │ Baseline    │ Optimized │ Speedup      ║
-╠════════════════════════════════════════════════════════════════╣
-║  Compute-Intensive    │  249,000    │  15,585   │  15.98x      ║
-║  Memory-Intensive     │  533,000    │  17,350   │  30.72x      ║
-║  Branch-Heavy         │  129,000    │  13,030   │   9.90x      ║
-║  Balanced             │  291,000    │  15,625   │  18.62x      ║
-╠════════════════════════════════════════════════════════════════╣
-║  RANGE                │             │           │  10x - 31x   ║
-╚════════════════════════════════════════════════════════════════╝
-```
+This demonstrates why modern CPUs require multi-level cache hierarchies.
 
 ## How to Run (Vivado)
 
+### Complete TCL Commands
 ```tcl
 # Step 1: Close any existing simulation
 close_sim -force
@@ -96,30 +62,22 @@ launch_simulation
 run 500ns
 ```
 
-## 為什麼 Memory-Intensive 加速最多？
-
-因為 **Memory Wall Problem**！
-- 沒有 Cache: 100 cycles/access × 5000 accesses = 500,000 cycles
-- 有 L1 Cache: 1.2 cycles/access × 5000 accesses = 6,000 cycles
-- **光是 Cache 就減少了 494,000 cycles！**
-
-這證明了為什麼現代 CPU 需要多級 Cache 架構。
-
-## 結論
-
-透過本課程學到的優化技術：
-1. **Data Forwarding** - 消除 pipeline 中的 data hazard
-2. **Branch Prediction** - 減少 control hazard 的代價
-3. **Cache Memory** - 解決 Memory Wall 問題
-4. **SIMD Parallelism** - 利用 data-level parallelism
-
-**綜合效果：10x - 31x 性能提升！**
-
-這就是計算機架構課程的學術價值 - 理論轉化為可量化的實際效能改進。
+### Quick One-Liner
+```tcl
+close_sim -force; set_property top tb_integrated [get_filesets sim_1]; launch_simulation; run 500ns
+```
 
 ## Files
-- `tb_integrated.v` - 性能分析 testbench
-- `README.md` - 本文件
+- `tb_integrated.v` - Integrated performance analysis testbench
+- `integrated_analysis_demo.mp4` - Demo video
+- `README.md` - This documentation
 
-## Author
-劉俊逸 (M143140014)
+## Conclusion
+
+By combining all optimization techniques learned in this course:
+1. **Data Forwarding** - Eliminates pipeline data hazards
+2. **Branch Prediction** - Reduces control hazard penalties
+3. **Cache Memory** - Addresses the Memory Wall problem
+4. **SIMD Parallelism** - Exploits data-level parallelism
+
+**Combined Result: 10x - 31x performance improvement across different workloads!**
