@@ -43,6 +43,23 @@ See [`docs/overhead_analysis.md`](../../docs/overhead_analysis.md) for detailed 
 3. Branch penalties contribute to remaining stalls
 4. Pipeline efficiency improves from 55% to 79%
 
+## How to Run (Vivado)
+
+### Complete TCL Commands
+```tcl
+# Step 1: Close any existing simulation
+close_sim -force
+
+# Step 2: Set the testbench as top module
+set_property top testbench_analysis [get_filesets sim_1]
+
+# Step 3: Launch simulation
+launch_simulation
+
+# Step 4: Run to completion
+run -all
+```
+
 ## Demo Video
 
 ### Quantitative Analysis Demo

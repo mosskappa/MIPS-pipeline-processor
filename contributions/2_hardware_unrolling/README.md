@@ -30,6 +30,23 @@ endgenerate
 - **Software loop**: iterations execute one after another
 - **Hardware unrolling**: iterations become parallel hardware units
 
+## How to Run (Vivado)
+
+### Complete TCL Commands
+```tcl
+# Step 1: Close any existing simulation
+close_sim -force
+
+# Step 2: Set the testbench as top module
+set_property top tb_simd_add [get_filesets sim_1]
+
+# Step 3: Launch simulation
+launch_simulation
+
+# Step 4: Run to completion
+run -all
+```
+
 ## Demo Video
 
 ### Hardware Unrolling Demo
