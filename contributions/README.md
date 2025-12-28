@@ -1,6 +1,6 @@
 # My Contributions
 
-This folder contains all **10 contributions** I made to this MIPS Pipeline Processor project.
+This folder contains all **11 contributions** I made to this MIPS Pipeline Processor project.
 
 ## Contribution Summary
 
@@ -16,6 +16,7 @@ This folder contains all **10 contributions** I made to this MIPS Pipeline Proce
 | 8 | [Parentheses Support](./8_parentheses_support/) | `8_parentheses_support/` | Shunting-yard Algorithm |
 | 9 | [CORDIC Math Functions](./9_cordic_math_functions/) | `9_cordic_math_functions/` | 16-stage Pipeline Trig |
 | 10 | [Cache Memory Hierarchy](./10_cache_memory_hierarchy/) | `10_cache_memory_hierarchy/` | L1 Cache (~7x Speedup) |
+| 11 | [Integrated Processor](./11_integrated_processor/) | `11_integrated_processor/` | Combined 10x-31x Speedup |
 
 ---
 
@@ -55,6 +56,19 @@ Source: [Pranav-2045/CORDIC](https://github.com/Pranav-2045/CORDIC)
 AMAT = 1 + (0.05 × 10) = 1.5 cycles
 Speedup = 10 / 1.5 ≈ 7x
 ```
+
+### Contribution 11: Integrated Processor Analysis
+
+Combines **all optimizations** to measure cumulative performance:
+
+| Workload | Baseline | Optimized | Speedup |
+|----------|----------|-----------|--------|
+| Compute-Intensive | 249,000 | 15,585 | **15.98x** |
+| Memory-Intensive | 533,000 | 17,350 | **30.72x** |
+| Branch-Heavy | 129,000 | 13,030 | **9.90x** |
+| Balanced | 291,000 | 15,625 | **18.62x** |
+
+**Overall Range: 10x - 31x speedup!**
 
 ---
 
