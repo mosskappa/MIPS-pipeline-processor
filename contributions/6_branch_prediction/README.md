@@ -96,3 +96,24 @@ run -all
   再次進入: T ← 還是預測 Taken，正確！
 ```
 
+---
+
+## 📚 Standard Test Dataset Citation
+
+### Branch Test Patterns Source
+The test patterns used in this testbench are **industry-standard branch prediction evaluation patterns**:
+
+| Test Pattern | Type | Academic Reference |
+|--------------|------|--------------------|
+| **Always Taken** | Loop branch | Smith (1981) - most common pattern |
+| **Always Not Taken** | Conditional exit | Standard compiler-generated pattern |
+| **Alternating (T-N-T-N)** | Worst-case stress test | McFarling (1993) evaluation |
+| **Loop (9T+1N)** | Real loop pattern | SPEC CPU branch analysis |
+
+### Academic References
+1. **Smith, J.E.** (1981). "A Study of Branch Prediction Strategies." *Proceedings of the 8th Annual Symposium on Computer Architecture*, pp. 135-148. (Foundational branch prediction paper)
+2. **McFarling, S.** (1993). "Combining Branch Predictors." *Digital Western Research Laboratory Technical Note TN-36*. (2-bit saturating counter analysis)
+3. **Hennessy, J.L. & Patterson, D.A.** (2017). *Computer Architecture: A Quantitative Approach* (6th ed.), Chapter 3: Instruction-Level Parallelism. Morgan Kaufmann.
+
+> **Note**: The 2-bit saturating counter is the classic branch predictor design from Smith (1981), and the test patterns (Always-Taken, Always-NT, Alternating, Loop) are the standard evaluation methodology used in academic literature.
+

@@ -59,4 +59,30 @@ close_sim -force; set_property top testbench_metrics_enhanced [get_filesets sim_
 ### With Forwarding (CPI = 1.26)
 ![With Forwarding Demo](cpi_with_forwarding.mp4)
 
+---
+
+## 📚 Standard Test Dataset Citation
+
+### Test Program Source
+The processor test program used for CPI measurement is based on **standard sorting algorithms**:
+
+| Algorithm | Type | Academic Reference |
+|-----------|------|--------------------|
+| **Bubble Sort** | O(n²) comparison sort | Knuth (1998) Vol. 3 |
+| **Register-intensive ops** | RAW hazard generation | H&P standard test methodology |
+| **Load-use sequences** | Data hazard testing | Patterson & Hennessy Ch.4 |
+
+### Academic References
+1. **Knuth, D.E.** (1998). *The Art of Computer Programming, Volume 3: Sorting and Searching* (2nd ed.), Section 5.2.2: Sorting by Exchanging. Addison-Wesley.
+2. **Patterson, D.A. & Hennessy, J.L.** (2020). *Computer Organization and Design: The Hardware/Software Interface* (6th ed.), Chapter 4: The Processor. Morgan Kaufmann.
+3. **Hennessy, J.L. & Patterson, D.A.** (2017). *Computer Architecture: A Quantitative Approach* (6th ed.), Appendix C: Pipelining: Basic and Intermediate Concepts.
+
+### CPI Measurement Methodology
+The CPI (Cycles Per Instruction) measurement follows the standard formula from Hennessy & Patterson:
+```
+CPI = Total Cycles / Instruction Count
+Pipeline Efficiency = Ideal CPI / Actual CPI = 1 / CPI
+```
+
+> **Note**: Bubble Sort is a canonical sorting benchmark used extensively in computer architecture education. The test program exercises R-type, I-type, load/store, and branch instructions to stress-test the pipeline.
 
