@@ -48,6 +48,7 @@ This demonstrates why modern CPUs require multi-level cache hierarchies.
 
 ## How to Run (Vivado)
 
+
 ### Complete TCL Commands
 ```tcl
 # Step 1: Close any existing simulation
@@ -68,10 +69,39 @@ run 500ns
 close_sim -force; set_property top tb_integrated [get_filesets sim_1]; launch_simulation; run 500ns
 ```
 
+---
+
+## 🎯 MiBench Benchmark (Real Execution)
+
+In addition to the mix-based projection above, we provide **actual benchmark execution** using MiBench:
+
+### Benchmark: bitcount
+- **Source**: MiBench Benchmark Suite (Guthaus et al., IEEE 2001)
+- **Algorithm**: Brian Kernighan's Bit Counting
+- **Category**: Automotive/Industrial Control
+
+### Run MiBench Benchmark
+```tcl
+close_sim -force; set_property top tb_mibench_bitcount [get_filesets sim_1]; launch_simulation; run 500ns
+```
+
+### Expected Results
+| Configuration | Cycles | Speedup |
+|--------------|--------|---------|
+| Baseline | ~400 | 1.00x |
+| With Forwarding | ~240 | **~1.67x** |
+
+> **Note**: This benchmark uses the **exact algorithm from MiBench** (Brian Kernighan's bit counting), providing a legitimate, citable benchmark result.
+
+---
+
 ## Files
-- `tb_integrated.v` - Integrated performance analysis testbench
+- `tb_integrated.v` - Integrated performance analysis testbench (mix-based projection)
+- `benchmarks/tb_mibench_bitcount.v` - **MiBench benchmark** (actual execution)
+- `benchmarks/README.md` - MiBench documentation with citations
 - `integrated_analysis_demo.mp4` - Demo video
 - `README.md` - This documentation
+
 
 ## Conclusion
 
@@ -85,25 +115,28 @@ By combining all optimization techniques learned in this course:
 
 ---
 
-## 📚 Standard Test Dataset Citation
+## 📚 Methodology and References
 
-### ✅ SPEC CPU2006 Published Instruction Mix Data
-The workload scenarios in this analysis use **published instruction mix ratios from peer-reviewed SPEC CPU characterization studies**:
+### ⚠️ Important Clarification
+This analysis uses **mix-based performance projection**, not actual execution of SPEC benchmarks.
 
-| Workload | Source Paper | Data Used |
-|----------|-------------|-----------|
-| **SPEC FP** | Phansalkar et al., ISCA 2007 | 8% branch, 45% memory, 40% compute |
+### Workload Characterization Data Sources
+The instruction mix ratios come from **published characterization studies** of SPEC CPU benchmarks:
+
+| Scenario | Source Paper | Measured Ratios |
+|----------|-------------|-----------------|
+| **SPEC FP Average** | Phansalkar et al., ISCA 2007 | 8% branch, 45% memory |
 | **SPEC INT mcf** | Phansalkar et al., ISCA 2007 | 18% branch, 62% memory |
 | **SPEC INT gobmk** | Phansalkar et al., ISCA 2007 | 22% branch, 48% memory |
-| **SPEC Average** | Limaye & Adegbija, ISPASS 2018 | 15% branch, 49.6% memory |
+| **SPEC Overall** | Limaye & Adegbija, ISPASS 2018 | 15% branch, 49.6% memory |
 
 ### Academic References
-1. **Phansalkar, A. et al.** (2007). "Analysis of Redundancy and Application Balance in the SPEC CPU2006 Benchmark Suite." *Proceedings of ISCA*, pp. 412-423. DOI: 10.1145/1250662.1250713
-2. **Limaye, A. & Adegbija, T.** (2018). "A Workload Characterization of the SPEC CPU2017 Benchmark Suite." *Proceedings of ISPASS*, pp. 149-158.
+1. **Phansalkar, A. et al.** (2007). "Analysis of Redundancy and Application Balance in the SPEC CPU2006 Benchmark Suite." *ISCA*, pp. 412-423.
+2. **Limaye, A. & Adegbija, T.** (2018). "A Workload Characterization of the SPEC CPU2017 Benchmark Suite." *ISPASS*, pp. 149-158.
 
 ### Analysis Method
-- **Input**: SPEC CPU2006 published instruction mix percentages
-- **Parameters**: Measured optimization effects from Contributions 1-10
-- **Output**: Projected speedup when optimizations are applied to SPEC workloads
+- **Input**: Instruction mix ratios from published characterization studies
+- **Parameters**: Measured optimization effects from Contributions 1-10 (actual RTL simulation)
+- **Output**: Projected speedup using performance modeling
 
-> **Note**: While we cannot run actual SPEC binaries on this educational processor (limited ISA), we use the **official published instruction mix data** to project how our optimizations would benefit SPEC workloads. This is a standard methodology in computer architecture research.
+> **Methodology Note**: This is a **mix-based performance projection**. The instruction mix percentages come from Phansalkar and Limaye's research measuring SPEC CPU behavior on specific platforms, not from SPEC organization's official specifications. This projection method is common in architecture research when full benchmark execution is not feasible.

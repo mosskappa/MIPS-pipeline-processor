@@ -184,20 +184,20 @@ close_sim -force; set_property top tb_comprehensive_analysis [get_filesets sim_1
 - **4 three-way combinations** (n choose 3)
 - **1 full combination** (all 4)
 
-## 📚 Standard Test Dataset Citation
+## 📚 Methodology and References
 
-### Methodology and Data Sources
-| Analysis | Standard Reference |
-|----------|-------------------|
-| **Synergy Factor** | Amdahl's Law extension |
-| **Shadow BP Analysis** | Patterson & Hennessy, *COD* Ch. 4.8 |
-| **CPI Decomposition** | Hennessy & Patterson, *CAAQA* Ch. 3 |
-| **DOE Workload Mix** | **SPEC CPU2006** (Limaye, ISPASS 2018) |
+### Analysis Methods
+| Analysis | Description | Reference |
+|----------|-------------|-----------|
+| **Combined Speedup** | Multiplicative effect of independent optimizations | Performance modeling principles |
+| **Dynamic BP Analysis** | 2-bit saturating counter predictor | Patterson & Hennessy, *COD* Ch. 4 |
+| **CPI Decomposition** | CPI = Base CPI + Stall cycles | Hennessy & Patterson, *CAAQA* Ch. 3 |
+| **DOE Workload Mix** | Instruction mix from published characterization | Limaye & Adegbija, ISPASS 2018 |
 
 ### Academic References
-1. **Patterson, D.A. & Hennessy, J.L.** (2020). *Computer Organization and Design* (6th ed.), Chapter 4.8. (Shadow BP methodology)
-2. **Smith, J.E.** (1981). "A Study of Branch Prediction Strategies." *ISCA*, pp. 135-148. (2-bit predictor)
-3. **Amdahl, G.M.** (1967). "Validity of the single processor approach." *AFIPS*, pp. 483-485. (Synergy analysis)
-4. **Limaye, A. & Adegbija, T.** (2018). "A Workload Characterization of the SPEC CPU2017 Benchmark Suite." *ISPASS*, pp. 149-158. (DOE workload)
+1. **Patterson, D.A. & Hennessy, J.L.** (2020). *Computer Organization and Design* (6th ed.), Chapter 4: The Processor.
+2. **Smith, J.E.** (1981). "A Study of Branch Prediction Strategies." *ISCA*, pp. 135-148.
+3. **Amdahl, G.M.** (1967). "Validity of the single processor approach." *AFIPS*, pp. 483-485.
+4. **Limaye, A. & Adegbija, T.** (2018). "A Workload Characterization of the SPEC CPU2017 Benchmark Suite." *ISPASS*, pp. 149-158.
 
-> **Note**: The full DOE analysis (`tb_comprehensive_analysis.v`) uses SPEC CPU2006 published instruction mix (15% branch, 49.6% memory) for all 16 configuration tests.
+> **Methodology Note**: The DOE analysis (`tb_comprehensive_analysis.v`) uses instruction mix ratios from Limaye & Adegbija's characterization study (15% branch, 49.6% memory) as a proxy for representative workloads. This is a **mix-based performance projection**, not actual execution of SPEC benchmarks.
