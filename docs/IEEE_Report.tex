@@ -49,7 +49,8 @@
     tabsize=2,
     showstringspaces=false,
     columns=flexible,
-    xleftmargin=1em,
+    xleftmargin=0pt,
+    xrightmargin=0pt,
     morekeywords={module, endmodule, input, output, wire, reg, assign, always, begin, end, case, endcase, if, else, for, parameter, localparam, generate, endgenerate, genvar, posedge, negedge, integer}
 }
 \lstset{style=verilog,upquote=true,
@@ -178,7 +179,7 @@ The ``Memory Wall'' refers to the growing disparity between processor speed and 
     \item \textbf{Result}: A single memory access can cost 100--300 CPU cycles in modern systems
 \end{itemize}
 
-\textbf{Solution}: Cache memory hierarchy. By keeping frequently accessed data in small, fast caches (L1, L2, L3), processors can avoid slow main memory accesses most of the time. Our L1 cache implementation reduces average memory access time by \textbf{16.7$\times$}.
+\textbf{Solution}: Cache memory hierarchy. By keeping frequently accessed data in small, fast caches (L1, L2, L3), processors can avoid slow main memory accesses most of the time. Our L1 cache implementation reduces average memory access time by \textbf{26$\times$} (based on 97.22\% hit rate).
 
 \subsection{Problem Statement}
 The baseline MIPS pipeline implemented in this project suffers from:
@@ -582,14 +583,21 @@ Michael Flynn's 1966 classification categorizes computer architectures by instru
 \end{itemize}
 
 \subsubsection{Concept: Software Loop vs Hardware Unrolling}
-\begin{verbatim}
-Sequential (8 cycles):       SIMD 8 lanes (1 cycle):
-  a[0] + b[0] -> y[0]          a[0..7] + b[0..7]
-  a[1] + b[1] -> y[1]                 |
-  a[2] + b[2] -> y[2]                 v
-  ...                            y[0..7]
-  a[7] + b[7] -> y[7]          (all in 1 cycle!)
-\end{verbatim}
+\begin{table}[!t]
+\centering
+\caption{Software Loop vs Hardware Unrolling}
+\footnotesize
+\begin{tabular}{@{}p{0.45\columnwidth}|p{0.45\columnwidth}@{}}
+\toprule
+\textbf{Sequential (8 cycles)} & \textbf{SIMD 8 lanes (1 cycle)} \\
+\midrule
+\texttt{a[0]+b[0]$\to$y[0]} & \multirow{5}{*}{\parbox{0.4\columnwidth}{\centering\texttt{a[0..7]+b[0..7]}\\$\downarrow$\\\texttt{y[0..7]}\\(all in 1 cycle!)}} \\
+\texttt{a[1]+b[1]$\to$y[1]} & \\
+\texttt{...} & \\
+\texttt{a[7]+b[7]$\to$y[7]} & \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[!t]
 \centering
@@ -654,6 +662,7 @@ Power & 1$\times$ & $\sim$4--6$\times$ \\
 \end{tabular}
 \end{table}
 
+\FloatBarrier  % Prevent table from overlapping Contribution 5
 %-----------------------------------------------------------------------------
 \subsection{Contribution 5: SIMD ALU Expansion}
 
@@ -711,6 +720,7 @@ endmodule
     \item In real hardware, these would require multi-cycle or pipelined implementations
 \end{itemize}
 
+\FloatBarrier  % Prevent SIMD ALU code from overlapping Contribution 6
 %-----------------------------------------------------------------------------
 \subsection{Contribution 6: Branch Prediction}
 
@@ -885,7 +895,7 @@ Memory \% & 49.6\% & Phansalkar~\cite{phansalkar2007analysis} \\
     ymin=0, ymax=4.5,
     nodes near coords,
     every node near coord/.append style={font=\tiny\bfseries},
-    width=\columnwidth,
+    width=0.9\textwidth,
     height=4cm,
     ymajorgrids=true,
     grid style=dashed,
@@ -1393,6 +1403,8 @@ With Forwarding & 303 & \textbf{2.61$\times$} \\
 \end{tabular}
 \end{table}
 
+\textbf{Note}: This test isolates the effect of \textbf{Data Forwarding only}. The benchmark (bitcount) is compute-bound with minimal memory accesses, so Cache/SIMD optimizations have negligible impact. The 2.61$\times$ speedup reflects pipeline hazard elimination, not the combined effect of all optimizations.
+
 \subsubsection{Mix-Based Performance Projection}
 \textbf{Data Source}: Phansalkar et al.~\cite{phansalkar2007analysis} and Limaye \& Adegbija~\cite{limaye2018workload}
 
@@ -1433,7 +1445,7 @@ Each optimization targets a specific performance bottleneck:
 \midrule
 Data Forwarding & CPI & 1.82$\rightarrow$1.26 (31\%) & Data Hazards \\
 Branch Prediction & Accuracy & 78.33\% & Control Hazards \\
-L1 Cache & AMAT & 100$\rightarrow$6 (16.7$\times$) & Memory Wall \\
+L1 Cache & AMAT & 100$\rightarrow$3.8 (26$\times$) & Memory Wall \\
 SIMD ALU & Throughput & 8$\times$ parallel & Limited ILP \\
 CORDIC & Accuracy & $<$1\% error & Math Functions \\
 \bottomrule
@@ -1481,7 +1493,7 @@ This work demonstrates that systematic application of multiple optimization tech
 
 \item \textbf{Branch Prediction} with 2-bit saturating counters achieves 78.33\% accuracy on adversarial patterns; real-world accuracy exceeds 90\% for loop-dominated code.
 
-\item \textbf{Cache Memory} provides the largest individual improvement: 16.7$\times$ AMAT reduction for L1 alone, up to 54.8$\times$ with three-level hierarchy.
+\item \textbf{Cache Memory} provides the largest individual improvement: 26$\times$ AMAT reduction for L1 alone (based on 97.22\% hit rate), up to 54.8$\times$ with three-level hierarchy.
 
 \item \textbf{SIMD Parallelism} delivers 8$\times$ throughput for data-parallel operations, demonstrating the power of data-level parallelism.
 
