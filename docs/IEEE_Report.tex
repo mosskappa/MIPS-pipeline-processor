@@ -1015,7 +1015,7 @@ Dijkstra's algorithm (1961) converts infix expressions to postfix (Reverse Polis
 \textbf{Postfix Evaluation}: Push 5, Push 3, Push 4, Pop 3+4=7, Pop 5*7=\textbf{35}
 
 \subsubsection{Test Results}
-\begin{table}[!t]
+\begin{table}[htbp]
 \centering
 \caption{Shunting-Yard Parentheses Test Results}
 \footnotesize
@@ -1031,6 +1031,8 @@ Dijkstra's algorithm (1961) converts infix expressions to postfix (Reverse Polis
 \end{table}
 
 \textbf{All 3 tests passed.}
+
+\textbf{Implementation Notes}: The Shunting-yard algorithm requires two stack structures: an operator stack for temporary storage and an output queue for the postfix result. Our hardware implementation uses a 32-entry operator stack and processes one token per clock cycle. Right associativity for exponentiation is handled by comparing precedence with strict inequality when the incoming operator is right-associative.
 
 %-----------------------------------------------------------------------------
 \FloatBarrier  % Prevent floats from Contribution 8 drifting into 9
@@ -1070,7 +1072,7 @@ end
 \end{lstlisting}
 
 \textbf{Test Results (Canonical Angles)}:
-\begin{table}[!t]
+\begin{table}[htbp]
 \centering
 \caption{CORDIC Accuracy Results (Canonical Angles)}
 \footnotesize
