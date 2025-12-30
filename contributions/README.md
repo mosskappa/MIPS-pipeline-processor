@@ -15,7 +15,7 @@ This folder contains all **12 contributions** I made to this MIPS Pipeline Proce
 | 7 | [Comprehensive Analysis](./7_comprehensive_analysis/) | `7_comprehensive_analysis/` | Synergy Analysis |
 | 8 | [Parentheses Support](./8_parentheses_support/) | `8_parentheses_support/` | Shunting-yard Algorithm |
 | 9 | [CORDIC Math Functions](./9_cordic_math_functions/) | `9_cordic_math_functions/` | 16-stage Pipeline Trig |
-| **10** | [Polynomial Exp](./9-2_polynomial_exp/) | `9-2_polynomial_exp/` | **1-cycle exp() (NEW)** |
+| **10** | [Polynomial Exp](./9-2_polynomial_exp/) | `9-2_polynomial_exp/` | **~4-cycle exp() (NEW)** |
 | 11 | [Cache Memory Hierarchy](./10_cache_memory_hierarchy/) | `10_cache_memory_hierarchy/` | L1 Cache (~7x Speedup) |
 | 12 | [Integrated Processor](./11_integrated_processor/) | `11_integrated_processor/` | Combined 10x-31x Speedup |
 
