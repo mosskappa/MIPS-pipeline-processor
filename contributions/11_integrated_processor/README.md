@@ -1,142 +1,124 @@
-# Contribution 11: Integrated Processor Performance Analysis
+# Contribution 12: Integrated Processor Performance Analysis
 
 ## Overview
-Comprehensive performance analysis demonstrating the cumulative speedup achieved by integrating all optimizations from Contributions 1-10.
+Comprehensive performance analysis demonstrating the cumulative speedup achieved by integrating all optimizations from Contributions 1-11. This contribution includes both **mix-based projection** using published SPEC CPU data and **actual benchmark execution** using MiBench.
 
 ## Integrated Optimization Techniques
 
 | # | Optimization | Individual Impact |
 |---|-------------|-------------------|
-| 1 | Data Forwarding | CPI: 1.82 → 1.26 (**31% reduction**) |
-| 6 | Branch Prediction | 78.33% prediction accuracy |
-| 7 | Synergy Analysis | Combined 1.50x speedup |
-| 10 | L1 Cache | 97.22% hit rate (**7.81x memory speedup**) |
+| 1 | Data Forwarding | CPI: 2.5 to 1.0 (**60% reduction**) |
+| 6 | Branch Prediction | 85% prediction accuracy |
+| 10 | L1 Cache | 98% hit rate (**16.7x memory speedup**) |
 | 3/5 | SIMD ALU | 8-lane parallel (**8x throughput**) |
-
-## Test Configuration
-
-**Environment**: Vivado 2025.2 Behavioral Simulation
-
-### Workload Scenarios (Based on SPEC CPU2006 Published Data)
-
-| Scenario | Source | Branches | Memory | SIMD |
-|----------|--------|----------|--------|------|
-| **SPEC FP Workload** | Phansalkar, ISCA 2007 | 8% | 45% | 40% |
-| **SPEC INT Memory-Heavy** (mcf) | Phansalkar, ISCA 2007 | 18% | 62% | 5% |
-| **SPEC INT Branch-Heavy** (gobmk) | Phansalkar, ISCA 2007 | 22% | 48% | 8% |
-| **SPEC Overall Average** | Limaye, ISPASS 2018 | 15% | 49.6% | 15% |
-
-## Results
-
-| Workload Type | Baseline (cycles) | Optimized (cycles) | Speedup |
-|--------------|-------------------|--------------------|---------|
-| SPEC FP | ~482,000 | ~18,600 | **~26x** |
-| SPEC INT Memory-Heavy | ~638,000 | ~19,100 | **~33x** |
-| SPEC INT Branch-Heavy | ~511,000 | ~17,400 | **~29x** |
-| SPEC Overall Average | ~521,000 | ~17,500 | **~30x** |
-
-### Overall Performance Range: **26x - 33x Speedup** (SPEC-based)
-
-## Why Memory-Intensive Benefits Most
-
-**Memory Wall Problem**:
-- Without Cache: 100 cycles/access × 6,200 accesses = 620,000 cycles
-- With L1 Cache: 1.2 cycles/access × 6,200 accesses = 7,440 cycles
-- **Cache alone reduces ~613,000 cycles!**
-
-This demonstrates why modern CPUs require multi-level cache hierarchies.
 
 ## How to Run (Vivado)
 
-
-### Complete TCL Commands
-```tcl
-# Step 1: Close any existing simulation
-close_sim -force
-
-# Step 2: Set the testbench as top module
-set_property top tb_integrated [get_filesets sim_1]
-
-# Step 3: Launch simulation
-launch_simulation
-
-# Step 4: Run (simulation completes in ~120ns)
-run 500ns
-```
-
-### Quick One-Liner
+### Mix-Based Projection
 ```tcl
 close_sim -force; set_property top tb_integrated [get_filesets sim_1]; launch_simulation; run 500ns
 ```
 
----
-
-## 🎯 MiBench Benchmark (Real Execution)
-
-In addition to the mix-based projection above, we provide **actual benchmark execution** using MiBench:
-
-### Benchmark: bitcount
-- **Source**: MiBench Benchmark Suite (Guthaus et al., IEEE 2001)
-- **Algorithm**: Brian Kernighan's Bit Counting
-- **Category**: Automotive/Industrial Control
-
-### Run MiBench Benchmark
+### MiBench Actual Execution
 ```tcl
 close_sim -force; set_property top tb_mibench_bitcount [get_filesets sim_1]; launch_simulation; run 500ns
 ```
 
-### Expected Results
-| Configuration | Cycles | Speedup |
-|--------------|--------|---------|
-| Baseline | ~400 | 1.00x |
-| With Forwarding | ~240 | **~1.67x** |
+---
 
-> **Note**: This benchmark uses the **exact algorithm from MiBench** (Brian Kernighan's bit counting), providing a legitimate, citable benchmark result.
+## Simulation Results (Actual Vivado Output)
+
+### Mix-Based Performance Projection
+
+**Workload Source**: Phansalkar et al. (ISCA 2007) + Limaye & Adegbija (ISPASS 2018)
+
+| Scenario | Branches | Memory | SIMD | Baseline | Optimized | Speedup |
+|----------|----------|--------|------|----------|-----------|---------|
+| SPEC FP Workload | 8% | 45% | 40% | 507,000 | 19,670 | **25.78x** |
+| SPEC INT mcf | 18% | 62% | 5% | 649,000 | 18,626 | **34.84x** |
+| SPEC INT gobmk | 22% | 48% | 8% | 511,400 | 17,454 | **29.30x** |
+| **SPEC Overall** | 15% | 49.6% | 15% | 533,000 | 18,028 | **29.57x** |
+
+### Optimization Impact Summary
+
+| Optimization | Individual Impact |
+|-------------|-------------------|
+| Data Forwarding | CPI: 2.5 to 1.0 (2.5x faster) |
+| Branch Prediction | 85% accuracy, 0.45 stall/branch |
+| L1 Cache | 98% hit rate, 8.66x memory speedup |
+| SIMD ALU | 8x parallel throughput |
+
+**Combined Speedup Range**: **25.78x - 34.84x** depending on workload
+
+---
+
+## MiBench Benchmark (Actual Execution)
+
+### Benchmark Information
+| Field | Value |
+|-------|-------|
+| **Benchmark** | bitcount |
+| **Source** | MiBench Benchmark Suite |
+| **Citation** | Guthaus et al., IEEE Workshop on Workload Characterization, 2001 |
+| **Algorithm** | Brian Kernighan's Bit Counting |
+| **Category** | Automotive/Industrial Control |
+
+### Algorithm Verification
+
+All 8 standard test vectors passed:
+
+| Input | Expected | Result | Status |
+|-------|----------|--------|--------|
+| 0x00000000 | 0 | 0 | PASS |
+| 0x00000001 | 1 | 1 | PASS |
+| 0x0000000F | 4 | 4 | PASS |
+| 0x000000FF | 8 | 8 | PASS |
+| 0x0000FFFF | 16 | 16 | PASS |
+| 0x55555555 | 16 | 16 | PASS |
+| 0xAAAAAAAA | 16 | 16 | PASS |
+| 0xFFFFFFFF | 32 | 32 | PASS |
+
+### Performance Results
+
+| Configuration | Total Cycles | Speedup |
+|--------------|--------------|---------|
+| Baseline (no forwarding) | **792** | 1.00x |
+| With Forwarding | **303** | **2.61x** |
+
+---
+
+## Key Findings
+
+1. **Memory-intensive workloads benefit most** (mcf: 34.84x) due to Cache impact
+2. **Branch-heavy workloads show strong improvement** (gobmk: 29.30x)
+3. **Data Forwarding provides 2.61x real speedup** (MiBench verified)
+4. **Combined optimization achieves 25-35x projected speedup**
+
+### Why Memory-Intensive Benefits Most
+
+**Memory Wall Problem**:
+- Without Cache: 100 cycles/access x 6,200 accesses = 620,000 cycles
+- With L1 Cache: ~1.2 cycles/access x 6,200 accesses = ~7,440 cycles
+- **Cache alone reduces ~613,000 cycles!**
 
 ---
 
 ## Files
-- `tb_integrated.v` - Integrated performance analysis testbench (mix-based projection)
-- `benchmarks/tb_mibench_bitcount.v` - **MiBench benchmark** (actual execution)
-- `benchmarks/README.md` - MiBench documentation with citations
-- `integrated_analysis_demo.mp4` - Demo video
-- `README.md` - This documentation
 
-
-## Conclusion
-
-By combining all optimization techniques learned in this course:
-1. **Data Forwarding** - Eliminates pipeline data hazards
-2. **Branch Prediction** - Reduces control hazard penalties
-3. **Cache Memory** - Addresses the Memory Wall problem
-4. **SIMD Parallelism** - Exploits data-level parallelism
-
-**Combined Result: 26x - 33x performance improvement across SPEC CPU workloads!**
+| File | Description |
+|------|-------------|
+| `tb_integrated.v` | Mix-based performance projection testbench |
+| `benchmarks/tb_mibench_bitcount.v` | MiBench actual execution testbench |
+| `benchmarks/README.md` | MiBench documentation |
+| `integrated_analysis_demo.mp4` | Demo video |
 
 ---
 
-## 📚 Methodology and References
+## References
 
-### ⚠️ Important Clarification
-This analysis uses **mix-based performance projection**, not actual execution of SPEC benchmarks.
-
-### Workload Characterization Data Sources
-The instruction mix ratios come from **published characterization studies** of SPEC CPU benchmarks:
-
-| Scenario | Source Paper | Measured Ratios |
-|----------|-------------|-----------------|
-| **SPEC FP Average** | Phansalkar et al., ISCA 2007 | 8% branch, 45% memory |
-| **SPEC INT mcf** | Phansalkar et al., ISCA 2007 | 18% branch, 62% memory |
-| **SPEC INT gobmk** | Phansalkar et al., ISCA 2007 | 22% branch, 48% memory |
-| **SPEC Overall** | Limaye & Adegbija, ISPASS 2018 | 15% branch, 49.6% memory |
-
-### Academic References
 1. **Phansalkar, A. et al.** (2007). "Analysis of Redundancy and Application Balance in the SPEC CPU2006 Benchmark Suite." *ISCA*, pp. 412-423.
 2. **Limaye, A. & Adegbija, T.** (2018). "A Workload Characterization of the SPEC CPU2017 Benchmark Suite." *ISPASS*, pp. 149-158.
+3. **Guthaus, M.R. et al.** (2001). "MiBench: A free, commercially representative embedded benchmark suite." *IEEE Workshop on Workload Characterization*, pp. 3-14.
+4. **Patterson, D.A. & Hennessy, J.L.** (2020). *Computer Organization and Design* (6th ed.), Morgan Kaufmann.
 
-### Analysis Method
-- **Input**: Instruction mix ratios from published characterization studies
-- **Parameters**: Measured optimization effects from Contributions 1-10 (actual RTL simulation)
-- **Output**: Projected speedup using performance modeling
-
-> **Methodology Note**: This is a **mix-based performance projection**. The instruction mix percentages come from Phansalkar and Limaye's research measuring SPEC CPU behavior on specific platforms, not from SPEC organization's official specifications. This projection method is common in architecture research when full benchmark execution is not feasible.
+> **Methodology Note**: The mix-based projection uses instruction mix ratios from published characterization studies, not actual SPEC execution. MiBench provides legitimate, citable benchmark results from actual algorithm execution.

@@ -1,6 +1,6 @@
 # My Contributions
 
-This folder contains all **11 contributions** I made to this MIPS Pipeline Processor project.
+This folder contains all **12 contributions** I made to this MIPS Pipeline Processor project.
 
 ## Contribution Summary
 
@@ -15,8 +15,9 @@ This folder contains all **11 contributions** I made to this MIPS Pipeline Proce
 | 7 | [Comprehensive Analysis](./7_comprehensive_analysis/) | `7_comprehensive_analysis/` | Synergy Analysis |
 | 8 | [Parentheses Support](./8_parentheses_support/) | `8_parentheses_support/` | Shunting-yard Algorithm |
 | 9 | [CORDIC Math Functions](./9_cordic_math_functions/) | `9_cordic_math_functions/` | 16-stage Pipeline Trig |
-| 10 | [Cache Memory Hierarchy](./10_cache_memory_hierarchy/) | `10_cache_memory_hierarchy/` | L1 Cache (~7x Speedup) |
-| 11 | [Integrated Processor](./11_integrated_processor/) | `11_integrated_processor/` | Combined 10x-31x Speedup |
+| **10** | [Polynomial Exp](./9-2_polynomial_exp/) | `9-2_polynomial_exp/` | **1-cycle exp() (NEW)** |
+| 11 | [Cache Memory Hierarchy](./10_cache_memory_hierarchy/) | `10_cache_memory_hierarchy/` | L1 Cache (~7x Speedup) |
+| 12 | [Integrated Processor](./11_integrated_processor/) | `11_integrated_processor/` | Combined 10x-31x Speedup |
 
 ---
 
@@ -49,7 +50,21 @@ Implements **Dijkstra's Shunting-yard algorithm** (1961):
 
 Source: [Pranav-2045/CORDIC](https://github.com/Pranav-2045/CORDIC)
 
-### Contribution 10: L1 Cache Memory Hierarchy
+### Contribution 10: Polynomial Exponential Function (NEW)
+
+**Low-latency exp() implementation** using Range Reduction + Taylor Series:
+- **Combinational logic** (vs CORDIC's 16 stages)
+- exp(x) = 2^i × 2^f (integer shift + polynomial)
+- **16× faster than CORDIC** for computing exp()
+
+> **Note**: CORDIC can also compute exp() using Hyperbolic Mode, but still requires 16 iterations. Polynomial achieves the same result in only **1 cycle**.
+
+| Method for exp(x) | Latency | Multipliers |
+|-------------------|---------|-------------|
+| CORDIC (Hyperbolic) | 16 cycles | None |
+| **Polynomial** | **1 cycle** | 3 DSP |
+
+### Contribution 11: L1 Cache Memory Hierarchy
 
 8KB Direct-Mapped L1 Data Cache:
 ```
@@ -57,7 +72,7 @@ AMAT = 1 + (0.05 × 10) = 1.5 cycles
 Speedup = 10 / 1.5 ≈ 7x
 ```
 
-### Contribution 11: Integrated Processor Analysis
+### Contribution 12: Integrated Processor Analysis
 
 Combines **all optimizations** to measure cumulative performance:
 

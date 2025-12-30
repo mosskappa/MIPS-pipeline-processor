@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 250">
+  <defs>
+    <marker id="fwdArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#E74C3C"/>
+    </marker>
+    <marker id="fwdArrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3498DB"/>
+    </marker>
+    <linearGradient id="stageG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90D9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Title -->
+  <text x="350" y="25" fill="#333" font-family="Arial, sans-serif" font-size="18" font-weight="bold" text-anchor="middle">
+    Data Forwarding (Bypassing) Paths
+  </text>
+  
+  <!-- Pipeline Stages -->
+  <rect x="50" y="70" width="80" height="50" rx="5" fill="url(#stageG)" stroke="#2E5D8C" stroke-width="2"/>
+  <text x="90" y="100" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">IF</text>
+  
+  <rect x="170" y="70" width="80" height="50" rx="5" fill="url(#stageG)" stroke="#2E5D8C" stroke-width="2"/>
+  <text x="210" y="100" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">ID</text>
+  
+  <rect x="290" y="70" width="80" height="50" rx="5" fill="#27AE60" stroke="#1E8449" stroke-width="3"/>
+  <text x="330" y="100" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">EX (ALU)</text>
+  
+  <rect x="410" y="70" width="80" height="50" rx="5" fill="url(#stageG)" stroke="#2E5D8C" stroke-width="2"/>
+  <text x="450" y="100" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">MEM</text>
+  
+  <rect x="530" y="70" width="80" height="50" rx="5" fill="url(#stageG)" stroke="#2E5D8C" stroke-width="2"/>
+  <text x="570" y="100" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle">WB</text>
+  
+  <!-- Arrows between stages -->
+  <line x1="130" y1="95" x2="168" y2="95" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="250" y1="95" x2="288" y2="95" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="370" y1="95" x2="408" y2="95" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="490" y1="95" x2="528" y2="95" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Forwarding Path 1: EX/MEM -> EX -->
+  <path d="M 450 125 Q 450 180 380 180 Q 330 180 330 125" stroke="#E74C3C" stroke-width="3" fill="none" marker-end="url(#fwdArrow)" stroke-dasharray="8,4"/>
+  <rect x="355" y="165" width="90" height="20" rx="3" fill="#E74C3C"/>
+  <text x="400" y="179" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">EX-EX Fwd</text>
+  
+  <!-- Forwarding Path 2: MEM/WB -> EX -->
+  <path d="M 570 125 Q 570 210 450 210 Q 330 210 330 125" stroke="#3498DB" stroke-width="3" fill="none" marker-end="url(#fwdArrow2)" stroke-dasharray="8,4"/>
+  <rect x="420" y="195" width="100" height="20" rx="3" fill="#3498DB"/>
+  <text x="470" y="209" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle">MEM-EX Fwd</text>
+  
+  <!-- Explanation box -->
+  <rect x="50" y="230" width="600" height="25" rx="3" fill="#F0F0F0" stroke="#CCC" stroke-width="1"/>
+  <text x="350" y="247" fill="#333" font-family="Arial, sans-serif" font-size="11" text-anchor="middle">
+    <tspan fill="#E74C3C" font-weight="bold">EX-EX:</tspan> Forward from EX/MEM register  |  
+    <tspan fill="#3498DB" font-weight="bold">MEM-EX:</tspan> Forward from MEM/WB register
+  </text>
+</svg>

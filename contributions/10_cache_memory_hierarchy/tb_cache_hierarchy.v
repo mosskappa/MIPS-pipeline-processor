@@ -65,15 +65,18 @@ module tb_cache_hierarchy;
     //=========================================================================
     // AMAT Calculation Functions
     // AMAT = Hit Time + Miss Rate × Miss Penalty
+    // Note: Verilog requires functions to have at least one input
     //=========================================================================
     
     function real calc_amat_no_cache;
+        input dummy;  // Required by Verilog syntax
         begin
             calc_amat_no_cache = MEM_LATENCY;  // Every access goes to memory
         end
     endfunction
     
     function real calc_amat_l1_only;
+        input dummy;  // Required by Verilog syntax
         real miss_penalty;
         begin
             miss_penalty = MEM_LATENCY;  // L1 miss goes directly to memory
@@ -82,6 +85,7 @@ module tb_cache_hierarchy;
     endfunction
     
     function real calc_amat_l1_l2;
+        input dummy;  // Required by Verilog syntax
         real l2_miss_penalty;
         real l1_miss_penalty;
         begin
@@ -95,6 +99,7 @@ module tb_cache_hierarchy;
     endfunction
     
     function real calc_amat_l1_l2_l3;
+        input dummy;  // Required by Verilog syntax
         real l3_miss_penalty;
         real l2_miss_penalty;
         real l1_miss_penalty;
@@ -144,10 +149,10 @@ module tb_cache_hierarchy;
         //=====================================================================
         // Calculate AMAT for each configuration
         //=====================================================================
-        amat_no_cache = calc_amat_no_cache();
-        amat_l1 = calc_amat_l1_only();
-        amat_l1l2 = calc_amat_l1_l2();
-        amat_l1l2l3 = calc_amat_l1_l2_l3();
+        amat_no_cache = calc_amat_no_cache(0);
+        amat_l1 = calc_amat_l1_only(0);
+        amat_l1l2 = calc_amat_l1_l2(0);
+        amat_l1l2l3 = calc_amat_l1_l2_l3(0);
         
         speedup_l1 = amat_no_cache / amat_l1;
         speedup_l1l2 = amat_no_cache / amat_l1l2;

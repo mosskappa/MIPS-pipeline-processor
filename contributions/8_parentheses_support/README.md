@@ -4,11 +4,11 @@
 Implemented a hardware expression parser using Dijkstra's Shunting-yard algorithm with **full parentheses support** and **right-associative exponentiation**.
 
 ## Features Implemented
-- ✅ **Parentheses Support**: `( )` override operator precedence
-- ✅ **Right Associativity**: `2^3^2 = 2^9 = 512` (not 64)
-- ✅ **Division**: `/` operator with proper precedence
-- ✅ **Operator Precedence**: `^` > `* /` > `+ -`
-- ✅ **Shunting-yard Algorithm**: Infix to Postfix conversion
+- **Parentheses Support**: `( )` override operator precedence
+- **Right Associativity**: `2^3^2 = 2^9 = 512` (not 64)
+- **Division**: `/` operator with proper precedence
+- **Operator Precedence**: `^` > `* /` > `+ -`
+- **Shunting-yard Algorithm**: Infix to Postfix conversion
 
 ## Operator Encoding
 
@@ -27,9 +27,9 @@ Implemented a hardware expression parser using Dijkstra's Shunting-yard algorith
 
 | Test | Expression | Expected | Result | Status |
 |------|------------|----------|--------|--------|
-| 1 | `5 * (3 + 4)` | 35 | 35 | ✅ PASS |
-| 2 | `2 ^ 3 ^ 2` | 512 | 512 | ✅ PASS |
-| 3 | `100 / (2 + 3)` | 20 | 20 | ✅ PASS |
+| 1 | `5 * (3 + 4)` | 35 | 35 | PASS |
+| 2 | `2 ^ 3 ^ 2` | 512 | 512 | PASS |
+| 3 | `100 / (2 + 3)` | 20 | 20 | PASS |
 
 **All 3 tests passed!**
 
@@ -80,20 +80,20 @@ run -all
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Expression Parser Pipeline                    │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│   Input (Infix)     Converter           Calculator    Output   │
-│   ─────────────     ───────────         ──────────    ──────   │
-│                                                                 │
-│   5*(3+4)=      →   Shunting-yard   →   Stack Eval  →   35    │
-│                    (handles () )       (computes)              │
-│                                                                 │
-│   Postfix: 5 3 4 + *                                           │
-│   Eval: 3+4=7, 5*7=35                                          │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------+
+|                    Expression Parser Pipeline                      |
++-------------------------------------------------------------------+
+|                                                                   |
+|   Input (Infix)     Converter           Calculator    Output     |
+|   -------------     -----------         ----------    ------     |
+|                                                                   |
+|   5*(3+4)=      ->   Shunting-yard   ->   Stack Eval  ->   35    |
+|                    (handles () )       (computes)                |
+|                                                                   |
+|   Postfix: 5 3 4 + *                                             |
+|   Eval: 3+4=7, 5*7=35                                            |
+|                                                                   |
++-------------------------------------------------------------------+
 ```
 
 ## Theoretical Background

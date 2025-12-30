@@ -16,28 +16,16 @@ module tb_mibench_bitcount;
     // Parameters
     //=========================================================================
     localparam CLK_PERIOD = 10;
-    
-    // Test vectors from MiBench bitcount
-    localparam [31:0] TEST_VALUES [0:7] = '{
-        32'h00000000,  // Expected: 0 bits
-        32'h00000001,  // Expected: 1 bit
-        32'h0000000F,  // Expected: 4 bits
-        32'h000000FF,  // Expected: 8 bits
-        32'h0000FFFF,  // Expected: 16 bits
-        32'h55555555,  // Expected: 16 bits
-        32'hAAAAAAAA,  // Expected: 16 bits
-        32'hFFFFFFFF   // Expected: 32 bits
-    };
-    
-    localparam [31:0] EXPECTED_COUNTS [0:7] = '{
-        32'd0, 32'd1, 32'd4, 32'd8, 32'd16, 32'd16, 32'd16, 32'd32
-    };
 
     //=========================================================================
     // Test Signals
     //=========================================================================
     reg clk;
     reg rst;
+    
+    // Test vectors from MiBench bitcount (standard Verilog arrays)
+    reg [31:0] TEST_VALUES [0:7];
+    reg [31:0] EXPECTED_COUNTS [0:7];
     
     // Performance counters
     integer total_cycles_baseline;
@@ -150,6 +138,25 @@ module tb_mibench_bitcount;
     // Main Test
     //=========================================================================
     initial begin
+        // Initialize test vectors (standard Verilog syntax)
+        TEST_VALUES[0] = 32'h00000000;  // Expected: 0 bits
+        TEST_VALUES[1] = 32'h00000001;  // Expected: 1 bit
+        TEST_VALUES[2] = 32'h0000000F;  // Expected: 4 bits
+        TEST_VALUES[3] = 32'h000000FF;  // Expected: 8 bits
+        TEST_VALUES[4] = 32'h0000FFFF;  // Expected: 16 bits
+        TEST_VALUES[5] = 32'h55555555;  // Expected: 16 bits
+        TEST_VALUES[6] = 32'hAAAAAAAA;  // Expected: 16 bits
+        TEST_VALUES[7] = 32'hFFFFFFFF;  // Expected: 32 bits
+        
+        EXPECTED_COUNTS[0] = 32'd0;
+        EXPECTED_COUNTS[1] = 32'd1;
+        EXPECTED_COUNTS[2] = 32'd4;
+        EXPECTED_COUNTS[3] = 32'd8;
+        EXPECTED_COUNTS[4] = 32'd16;
+        EXPECTED_COUNTS[5] = 32'd16;
+        EXPECTED_COUNTS[6] = 32'd16;
+        EXPECTED_COUNTS[7] = 32'd32;
+        
         rst = 1;
         #(CLK_PERIOD * 2);
         rst = 0;

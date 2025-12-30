@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="550" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="900" height="550" fill="#ffffff"/>
+  
+  <!-- Title -->
+  <text x="450" y="45" font-family="Arial, sans-serif" font-size="28" fill="#c0392b" text-anchor="middle" font-weight="bold">
+    Forwarding Unit Logic
+  </text>
+  
+  <!-- EXE Stage Box -->
+  <rect x="50" y="90" width="150" height="150" rx="10" fill="#fff5f5" stroke="#e74c3c" stroke-width="3"/>
+  <text x="125" y="125" font-family="Arial, sans-serif" font-size="18" fill="#e74c3c" text-anchor="middle" font-weight="bold">EXE Stage</text>
+  <text x="125" y="160" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">src1_EXE</text>
+  <text x="125" y="185" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">src2_EXE</text>
+  <text x="125" y="210" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">ST_src_EXE</text>
+  
+  <!-- MEM Stage Box -->
+  <rect x="280" y="90" width="150" height="130" rx="10" fill="#e8f8f5" stroke="#1abc9c" stroke-width="3"/>
+  <text x="355" y="125" font-family="Arial, sans-serif" font-size="18" fill="#1abc9c" text-anchor="middle" font-weight="bold">MEM Stage</text>
+  <text x="355" y="165" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">dest_MEM</text>
+  <text x="355" y="195" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">WB_EN_MEM</text>
+  
+  <!-- WB Stage Box -->
+  <rect x="510" y="90" width="150" height="130" rx="10" fill="#eafaf1" stroke="#27ae60" stroke-width="3"/>
+  <text x="585" y="125" font-family="Arial, sans-serif" font-size="18" fill="#27ae60" text-anchor="middle" font-weight="bold">WB Stage</text>
+  <text x="585" y="165" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">dest_WB</text>
+  <text x="585" y="195" font-family="Consolas, monospace" font-size="14" fill="#333333" text-anchor="middle">WB_EN_WB</text>
+  
+  <!-- Forwarding Unit Box -->
+  <rect x="100" y="300" width="550" height="180" rx="15" fill="#fef9e7" stroke="#f39c12" stroke-width="4"/>
+  <text x="375" y="340" font-family="Arial, sans-serif" font-size="22" fill="#e67e22" text-anchor="middle" font-weight="bold">
+    Forwarding Unit (Comparator)
+  </text>
+  
+  <!-- Logic Text -->
+  <text x="150" y="385" font-family="Consolas, monospace" font-size="16" fill="#1abc9c" font-weight="bold">if (src == dest_MEM &amp;&amp; WB_EN_MEM)</text>
+  <text x="520" y="385" font-family="Consolas, monospace" font-size="16" fill="#1abc9c">→ 2'b01</text>
+  
+  <text x="150" y="420" font-family="Consolas, monospace" font-size="16" fill="#27ae60" font-weight="bold">if (src == dest_WB &amp;&amp; WB_EN_WB)</text>
+  <text x="520" y="420" font-family="Consolas, monospace" font-size="16" fill="#27ae60">→ 2'b10</text>
+  
+  <text x="150" y="455" font-family="Consolas, monospace" font-size="16" fill="#7f8c8d">else</text>
+  <text x="520" y="455" font-family="Consolas, monospace" font-size="16" fill="#7f8c8d">→ 2'b00</text>
+  
+  <!-- Arrows -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e"/>
+    </marker>
+  </defs>
+  
+  <!-- EXE to Forwarding -->
+  <line x1="125" y1="240" x2="125" y2="290" stroke="#e74c3c" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- MEM to Forwarding -->
+  <line x1="355" y1="220" x2="355" y2="290" stroke="#1abc9c" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- WB to Forwarding -->
+  <line x1="585" y1="220" x2="585" y2="290" stroke="#27ae60" stroke-width="3" marker-end="url(#arrowhead)"/>
+  
+  <!-- Legend Box -->
+  <rect x="700" y="90" width="180" height="150" rx="10" fill="#f8f9fa" stroke="#bdc3c7" stroke-width="2"/>
+  <text x="790" y="120" font-family="Arial, sans-serif" font-size="16" fill="#2c3e50" text-anchor="middle" font-weight="bold">MUX Select</text>
+  
+  <rect x="720" y="135" width="30" height="25" fill="#bdc3c7" stroke="#7f8c8d"/>
+  <text x="760" y="153" font-family="Consolas, monospace" font-size="14" fill="#333">2'b00 Normal</text>
+  
+  <rect x="720" y="170" width="30" height="25" fill="#1abc9c" stroke="#16a085"/>
+  <text x="760" y="188" font-family="Consolas, monospace" font-size="14" fill="#333">2'b01 MEM</text>
+  
+  <rect x="720" y="205" width="30" height="25" fill="#27ae60" stroke="#1e8449"/>
+  <text x="760" y="223" font-family="Consolas, monospace" font-size="14" fill="#333">2'b10 WB</text>
+  
+  <!-- Output Box -->
+  <rect x="700" y="300" width="180" height="120" rx="10" fill="#ebf5fb" stroke="#3498db" stroke-width="2"/>
+  <text x="790" y="330" font-family="Arial, sans-serif" font-size="16" fill="#2980b9" text-anchor="middle" font-weight="bold">Outputs</text>
+  <text x="790" y="360" font-family="Consolas, monospace" font-size="14" fill="#333" text-anchor="middle">val1_sel [1:0]</text>
+  <text x="790" y="385" font-family="Consolas, monospace" font-size="14" fill="#333" text-anchor="middle">val2_sel [1:0]</text>
+  <text x="790" y="410" font-family="Consolas, monospace" font-size="14" fill="#333" text-anchor="middle">ST_val_sel [1:0]</text>
+  
+  <!-- Footer -->
+  <text x="450" y="520" font-family="Arial, sans-serif" font-size="14" fill="#7f8c8d" text-anchor="middle">
+    Data Forwarding: Bypass ALU results from MEM/WB stages to resolve RAW hazards
+  </text>
+</svg>
