@@ -1283,17 +1283,22 @@ Bits 31--13 & Bits 12--5 & Bits 4--0 \\
 \begin{figure}[!t]
 \centering
 \resizebox{\columnwidth}{!}{%
-\begin{tikzpicture}[node distance=1cm, transform shape]
-    \node[state] (idle) {IDLE};
-    \node[state, right=1.2cm of idle] (cmp) {CMP};
-    \node[state, below=0.8cm of cmp] (wb) {WB};
-    \node[state, left=1.2cm of wb] (alloc) {ALLOC};
+\begin{tikzpicture}[->, >=stealth, node distance=1.8cm, auto, thick,
+    state_node/.style={circle, draw, minimum size=1.5cm, align=center, font=\bfseries\scriptsize}]
+
+    % Nodes (States) - all equal size
+    \node[state_node] (idle) {IDLE};
+    \node[state_node] (cmp) [right of=idle, node distance=2.5cm] {CMP};
+    \node[state_node] (wb) [below of=cmp, node distance=2.0cm] {WB};
+    \node[state_node] (alloc) [left of=wb, node distance=2.5cm] {ALLOC};
+
+    % Transitions
     \draw[arrow] (idle) -- node[above,font=\tiny]{req} (cmp);
+    \draw[arrow] (cmp) to[bend right=45] node[above,font=\tiny]{hit} (idle);
     \draw[arrow] (cmp) -- node[right,font=\tiny]{miss+dirty} (wb);
-    \draw[arrow] (cmp.south west) -- node[left,font=\tiny]{miss} (alloc.north);
-    \draw[arrow] (wb) -- (alloc);
-    \draw[arrow] (alloc) -- node[left,font=\tiny]{done} (idle);
-    \draw[arrow] (cmp.north) to[bend right=50] node[above,font=\tiny]{hit} (idle.north);
+    \draw[arrow] (cmp) -- node[above,sloped,font=\tiny]{miss+clean} (alloc);
+    \draw[arrow] (wb) -- node[below,font=\tiny]{done} (alloc);
+    \draw[arrow] (alloc) to[bend left=45] node[left,font=\tiny]{done} (idle);
 \end{tikzpicture}%
 }
 \caption{L1 Cache Controller FSM. IDLE=waiting, CMP=compare tag, WB=write-back dirty block, ALLOC=allocate new block.}
