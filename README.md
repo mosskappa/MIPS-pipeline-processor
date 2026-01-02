@@ -76,7 +76,7 @@ Contributions are welcomed, both general improvements as well as new features su
 
 ## My Contributions (劉俊逸 M143140014)
 
-I added **10 contributions** to this project for Computer Architecture Fall 2025:
+I added **13 contributions** to this project for Computer Architecture Fall 2025:
 
 ### Contribution Summary Table
 
@@ -91,7 +91,10 @@ I added **10 contributions** to this project for Computer Architecture Fall 2025
 | 7 | **Comprehensive Analysis** | Single vs. combined optimization effects | Synergy study |
 | 8 | **Expression Parser** | Full arithmetic with parentheses & associativity | Stack-based |
 | 9 | **CORDIC Math Functions** | Graduate-level trigonometry (sin/cos) | 16-stage pipeline |
-| 10 | **Cache Memory Hierarchy** | L1 Direct-Mapped Data Cache | **~7x speedup** |
+| 10 | **Polynomial Exp** | Low-latency exp() approximation | ~4-cycle exp() |
+| 11 | **Cache Memory Hierarchy** | L1 Direct-Mapped Data Cache | **~7x speedup** |
+| 12 | **Integrated Processor** | Combined optimizations analysis | 10x-31x speedup |
+| **13** | **ODE Solver (微積分)** | Euler method for differential equations | **Calculus in HW** |
 
 ---
 

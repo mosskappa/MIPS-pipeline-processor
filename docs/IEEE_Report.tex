@@ -70,7 +70,7 @@
 \begin{document}
 \begin{CJK}{UTF8}{bsmi}  % Wrap entire document for stable CJK
 
-\title{Performance Optimization of a Pipelined MIPS Processor: A Comprehensive Analysis with 12 Contributions}
+\title{Performance Optimization of a Pipelined MIPS Processor: A Comprehensive Analysis with 13 Contributions}
 
 \author{JUNYI LIU~
 \thanks{Computer Architecture, National Sun Yat-sen University, December 2025.}}
@@ -81,16 +81,16 @@
 \maketitle
 
 \begin{abstract}
-This paper presents a comprehensive performance optimization study of a 5-stage pipelined MIPS processor. We implement and evaluate 12 contributions, including Data Forwarding, Branch Prediction, SIMD parallelism, CORDIC trigonometric functions, polynomial exp approximation, and an L1 Cache. Evaluation uses two methodologies: (1) \textbf{cycle-accurate RTL simulation} with MiBench bitcount benchmark, and (2) \textbf{analytical model-based projection} using SPEC CPU2006 instruction mix ratios. Results show 2.61$\times$ speedup on MiBench (measured) and up to 34.84$\times$ projected speedup on memory-intensive SPEC workloads. A Design of Experiments (DOE) analysis reveals that Cache provides the largest individual improvement (2.15$\times$) and Cache+SIMD shows \textbf{positive interaction} (synergy factor 1.20 under our cost model).
+This paper presents a comprehensive performance optimization study of a 5-stage pipelined MIPS processor. We implement and evaluate 13 contributions, including Data Forwarding, Branch Prediction, SIMD parallelism, CORDIC trigonometric functions, polynomial exp approximation, L1 Cache, and an ODE Solver for calculus operations. Evaluation uses two methodologies: (1) \textbf{cycle-accurate RTL simulation} with MiBench bitcount benchmark, and (2) \textbf{analytical model-based projection} using SPEC CPU2006 instruction mix ratios. Results show 2.61$\times$ speedup on MiBench (measured) and up to 34.84$\times$ projected speedup on memory-intensive SPEC workloads. A Design of Experiments (DOE) analysis reveals that Cache provides the largest individual improvement (2.15$\times$) and Cache+SIMD shows \textbf{positive interaction} (synergy factor 1.20 under our cost model).
 \end{abstract}
 
 \begin{IEEEkeywords}
-MIPS, Pipeline, Forwarding, Branch Prediction, Cache, SIMD, CORDIC, MiBench
+MIPS, Pipeline, Forwarding, Branch Prediction, Cache, SIMD, CORDIC, ODE Solver, MiBench
 \end{IEEEkeywords}
 
 %=============================================================================
 \section{Introduction}
-\IEEEPARstart{M}{odern} processor design relies on multiple optimization techniques to bridge the CPU-memory gap---the ``Memory Wall'' problem~\cite{hennessy2017computer}. This project implements 12 optimizations for a 5-stage MIPS pipeline. This section provides foundational background for readers unfamiliar with computer architecture concepts.
+\IEEEPARstart{M}{odern} processor design relies on multiple optimization techniques to bridge the CPU-memory gap---the ``Memory Wall'' problem~\cite{hennessy2017computer}. This project implements 13 optimizations for a 5-stage MIPS pipeline. This section provides foundational background for readers unfamiliar with computer architecture concepts.
 
 \subsection{What is MIPS?}
 MIPS (Microprocessor without Interlocked Pipeline Stages) is a 32-bit RISC (Reduced Instruction Set Computer) architecture developed at Stanford University in 1981 by John Hennessy~\cite{patterson2020computer}. MIPS is widely used in computer architecture education because:
@@ -191,11 +191,11 @@ The baseline MIPS pipeline implemented in this project suffers from:
 \end{itemize}
 
 \subsection{Contributions Overview}
-This project implements 12 distinct optimizations, summarized in Table~\ref{tab:contributions}. Each optimization targets a specific bottleneck, and their combined effect is analyzed using Design of Experiments (DOE) methodology.
+This project implements 13 distinct optimizations, summarized in Table~\ref{tab:contributions}. Each optimization targets a specific bottleneck, and their combined effect is analyzed using Design of Experiments (DOE) methodology.
 
 \begin{table}[!t]
 \centering
-\caption{12 Optimization Contributions by Category}
+\caption{13 Optimization Contributions by Category}
 \label{tab:contributions}
 \footnotesize
 \begin{tabular}{@{}p{2.2cm}p{5.5cm}@{}}
@@ -211,6 +211,8 @@ Parallelism \& Acceleration & \#2 Hardware Unrolling, \#5 SIMD ALU Expansion, \#
 Memory Hierarchy & \#11 L1 Cache, \#12 Integrated Analysis \\
 \midrule
 Parser Enhancement & \#8 Parentheses Support \\
+\midrule
+Calculus Operations & \#13 ODE Solver (Euler Method) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -425,7 +427,7 @@ Table~\ref{tab:testbenches} shows the testbench for each contribution.
 %=============================================================================
 \section{Contribution Details}
 
-This section describes each of the 12 contributions in detail, with implementation specifics and verification results.
+This section describes each of the 13 contributions in detail, with implementation specifics and verification results.
 
 \subsection{Contribution 1 \& 4: Performance Testbench and Quantitative Analysis}
 \textbf{Goal}: Establish a reusable testbench infrastructure for measuring pipeline performance metrics (CPI, IPC, stall cycles) and quantify the impact of data forwarding.
@@ -1429,10 +1431,111 @@ SPEC INT gobmk & 511,400 & 17,454 & 29.30$\times$ \\
 
 \textbf{Projection Assumptions}: SPEC projections assume near-elimination of memory stalls via caching and do not account for increased critical path delay from additional hardware. Clock frequency is assumed constant.
 
+%-----------------------------------------------------------------------------
+\subsection{Contribution 13: ODE Solver (Calculus Operations)}
+
+\textbf{Goal}: Implement a hardware Ordinary Differential Equation (ODE) solver using the Forward Euler method, demonstrating calculus operations (differentiation and integration) in hardware.
+
+\subsubsection{Mathematical Background}
+The solver computes solutions to systems of ODEs in state-space form:
+\begin{equation}
+\frac{dX}{dt} = A \cdot X + B \cdot U
+\label{eq:ode}
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $X$ is the state vector (size $N$)
+    \item $A$ is the system matrix ($N \times N$)
+    \item $B$ is the input matrix ($N \times M$)
+    \item $U$ is the input vector (size $M$)
+\end{itemize}
+
+\textbf{Forward Euler Method}:
+\begin{equation}
+X(t+h) = X(t) + h \cdot \frac{dX}{dt} = X(t) + h \cdot (A \cdot X + B \cdot U)
+\label{eq:euler}
+\end{equation}
+
+This implements:
+\begin{enumerate}
+    \item \textbf{Differentiation}: $\frac{dX}{dt} \approx \frac{X(t+h) - X(t)}{h}$
+    \item \textbf{Integration}: $X(t+h) = X(t) + \int \frac{dX}{dt} \, dt \approx X(t) + h \cdot f(X, U)$
+\end{enumerate}
+
+\subsubsection{Why More Complex Than CORDIC}
+\begin{table}[!t]
+\centering
+\caption{ODE Solver vs CORDIC Complexity Comparison}
+\label{tab:ode_vs_cordic}
+\footnotesize
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aspect} & \textbf{CORDIC} & \textbf{ODE Solver} \\
+\midrule
+Core Algorithm & Shift-add iterations & Matrix mult + Euler \\
+Operation Type & Single trig function & ODE system \\
+Data Structure & Scalar & Vectors \& Matrices \\
+Control Logic & 16-stage pipeline & 6-state FSM \\
+Memory & None & 8K $\times$ 64-bit RAM \\
+Math Level & Trigonometry & \textbf{Calculus} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Architecture}
+The ODE solver consists of:
+\begin{itemize}
+    \item \textbf{Euler.v}: Main solver module (279 lines) with 6-state FSM
+    \item \textbf{RAM-Pre.v}: Dual-port RAM for matrices and vectors
+    \item \textbf{multiplier\_16bit.v}: 16-bit Wallace tree multiplier
+    \item \textbf{add\_sub\_cla.v}: Carry Lookahead Adder
+\end{itemize}
+
+\textbf{State Machine Flow}:
+\begin{enumerate}
+    \item \textbf{Start}: Initialize, read $N$, $M$ from RAM
+    \item \textbf{Prepare}: Load system parameters
+    \item \textbf{Interpolate}: Read step size $h$
+    \item \textbf{Load1}: Compute $B \cdot U$ (matrix-vector multiplication)
+    \item \textbf{Load2}: Compute $A \cdot X$ (matrix-vector multiplication)
+    \item \textbf{Final\_Calc}: Compute $X_{new} = X + h \cdot (A \cdot X + B \cdot U)$
+\end{enumerate}
+
+\textbf{Source Attribution}: Based on 3amrA7med/ODE-Solver (GitHub), adapted for integration with MIPS processor project.
+
+\subsubsection{Verified Test Results}
+\textbf{TCL Command}:
+\begin{lstlisting}
+close_sim -force; set_property top tb_ode_solver [get_filesets sim_1]; launch_simulation; run 5000ns
+\end{lstlisting}
+
+\textbf{Test Setup}:
+\begin{itemize}
+    \item $N = 2$, $M = 1$, $h = 1$
+    \item $A = I$ (Identity matrix 2$\times$2)
+    \item $B = [1; 1]$, $X_0 = [10; 20]$, $U = [5]$
+\end{itemize}
+
+\textbf{Expected Calculation}:
+\begin{align*}
+X(t+h) &= X(t) + h \cdot (A \cdot X + B \cdot U) \\
+       &= [10, 20]^T + 1 \cdot ([10, 20]^T + [5, 5]^T) \\
+       &= [10, 20]^T + [15, 25]^T = [25, 45]^T
+\end{align*}
+
+\textbf{Results}:
+\begin{itemize}
+    \item $X_{new}[0] = 25$ (Expected: 25) --- \textbf{PASS}
+    \item $X_{new}[1] = 45$ (Expected: 45) --- \textbf{PASS}
+\end{itemize}
+
+\textbf{Simulation Time}: 570 ns
+
 %=============================================================================
 \section{Results Summary}
 
-This section consolidates the results from all 12 contributions and provides interpretation guidance.
+This section consolidates the results from all 13 contributions and provides interpretation guidance.
 
 \subsection{Individual Optimization Impact}
 Each optimization targets a specific performance bottleneck:
