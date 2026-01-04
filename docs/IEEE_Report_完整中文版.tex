@@ -288,7 +288,7 @@ Structural hazards 發生在硬體資源不足以支援所有 active 指令時�
 \toprule
 \textbf{類別} & \textbf{貢獻} \\
 \midrule
-Pipeline Hazard Mitigation & \#1 Performance Testbench, \#4 Quantitative Analysis, \#6 Branch Prediction, \#7 Comprehensive DOE \\
+Pipeline Hazard Mitigation & \#1 Data Forwarding, \#4 CPI Analysis, \#6 Branch Prediction, \#7 DOE Factorial \\
 \midrule
 Data~Hazard Resolution & \#3 Data Forwarding \\
 \midrule
@@ -296,7 +296,7 @@ Data~Hazard Resolution & \#3 Data Forwarding \\
 \midrule
 記憶體階層 & \#11 L1~Cache, \#12 Integrated Analysis \\
 \midrule
-解析器增強 & \#8 Parentheses Support \\
+解析器增強 & \#8 Expression Parser \\
 \midrule
 微積分運算 & \#13 ODE Solver (Euler Method) \\
 \bottomrule
@@ -515,7 +515,7 @@ SPEC INT gobmk & 22\% & 48\% & 30\% \\
 
 本節詳細描述 13 項貢獻的實作細節與驗證結果。
 
-\subsection{Contribution 1 \& 4: Performance Testbench 與 Quantitative Analysis}
+\subsection{Contribution 1 \& 4: Data Forwarding 與 CPI Analysis}
 \Goal建立可重用的 testbench 基礎設施，用於量測 pipeline 效能指標 (CPI, IPC, stall cycles) 並量化 data forwarding 的影響。
 
 \subsubsection{為何需要 Performance Testbench}
@@ -952,6 +952,26 @@ Loop (9T+1N) & Realistic loop & 78\% \\
     \item SIMD ALU (SIMD)
 \end{enumerate}
 
+\textbf{DOE 變數實作規格}：
+\begin{table}[!t]
+\centering
+\caption{DOE 變數的具體實作規格}
+\label{tab:doespec}
+\footnotesize
+\begin{tabular}{@{}llp{4.2cm}@{}}
+\toprule
+\textbf{縮寫} & \textbf{實作類型} & \textbf{關鍵參數} \\
+\midrule
+FWD & Full Forwarding & EX/MEM $\to$ EX, MEM/WB $\to$ EX \\
+BP & 2-bit Saturating Counter（PC-indexed） & 16-entry BHT, 2-bit counters, PC[5:2], \textbf{78.33\% 準確率} \\
+Cache & 僅 L1, Direct-Mapped, Write-Back & 8KB, 32B block, 256 lines, \textbf{97.22\% hit rate} \\
+SIMD & Packed SIMD（8$\times$8-bit） & 5 種運算 (+, $-$, $\times$, $\div$, \^{}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{註：BP 準確率為 4 種 pattern 的加權平均（Always Taken 90\%、Always Not Taken 85\%、Alternating 73\%、Loop 78\%）。Cache 使用 Write-Allocate 策略。}
+
 \textbf{Model 參數}：
 \begin{table}[!t]
 \centering
@@ -1065,7 +1085,7 @@ Memory \% & 49.6\% & Phansalkar~\cite{phansalkar2007analysis} \\
 \end{table}
 
 %-----------------------------------------------------------------------------
-\subsection{Contribution 8: Parentheses Support}
+\subsection{Contribution 8: Expression Parser}
 
 \Goal實作 Dijkstra's Shunting-yard algorithm 用於硬體 expression parsing，完整支援括號和 right-associative exponentiation。
 
@@ -1281,6 +1301,38 @@ Area & \textbf{Lower} & Higher \\
 \end{table}
 
 \textbf{4/4 test cases passed (Error $<$2\%). Simulation completed at 420 ns.}
+
+\subsubsection{自然對數：ln(x)}
+為了補充 $\exp(x)$，我們也實作其反函數 $\ln(x)$，使用相同的 range reduction 方法。
+
+\textbf{演算法}：
+\begin{equation}
+\ln(x) = \ln(2^k \cdot m) = k \cdot \ln(2) + \ln(m)
+\end{equation}
+其中 $k$ 透過 leading-zero detection 決定，$m \in [1, 2)$。
+
+對於 $\ln(m)$，我們使用 $y = m - 1 \in [0, 1)$ 並逼近：
+\begin{equation}
+\ln(1+y) \approx y - \frac{y^2}{2}
+\end{equation}
+
+\begin{table}[!t]
+\centering
+\caption{Polynomial ln(x) 測試結果}
+\footnotesize
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+\textbf{Input $x$} & \textbf{Expected} & \textbf{Result} & \textbf{Error} & \textbf{Status} \\
+\midrule
+1.0 & 0.0000 & $\approx$0.0 & $<$1\% & PASS \\
+2.0 & 0.6931 & $\approx$0.69 & $<$5\% & PASS \\
+$e$ (2.718) & 1.0000 & $\approx$1.0 & $<$5\% & PASS \\
+0.5 & -0.6931 & $\approx$-0.69 & $<$5\% & PASS \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{4/4 ln(x) test cases passed.}
 
 %-----------------------------------------------------------------------------
 % % \FloatBarrier removed

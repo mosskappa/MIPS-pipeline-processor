@@ -68,11 +68,15 @@ module tb_comprehensive_analysis;
     real baseline_cycles;
     
     //=========================================================================
-    // Clock Generation
+    // Clock Generation (Finite - stops when simulation ends)
     //=========================================================================
+    reg simulation_done = 0;
+    
     initial begin
         clk = 0;
-        forever #(CLK_PERIOD/2) clk = ~clk;
+        while (!simulation_done) begin
+            #(CLK_PERIOD/2) clk = ~clk;
+        end
     end
 
     //=========================================================================
@@ -152,12 +156,12 @@ module tb_comprehensive_analysis;
             cycles[config_id] = calc_cycles(use_fwd, use_bp, use_cache, use_simd);
             speedups[config_id] = baseline_cycles / cycles[config_id];
             
-            $display("│   %2d   │  %s  │  %s  │   %s   │  %s   │ %12.0f │  %6.2fx │",
+            $display("| %2d   | %s | %s |  %s  | %s  | %12.0f |  %6.2fx |",
                      config_id,
-                     use_fwd   ? "✓" : "✗",
-                     use_bp    ? "✓" : "✗",
-                     use_cache ? "✓" : "✗",
-                     use_simd  ? "✓" : "✗",
+                     use_fwd   ? " ON" : "OFF",
+                     use_bp    ? " ON" : "OFF",
+                     use_cache ? " ON" : "OFF",
+                     use_simd  ? " ON" : "OFF",
                      cycles[config_id],
                      speedups[config_id]);
         end
@@ -175,7 +179,7 @@ module tb_comprehensive_analysis;
         $display("┌──────────────────────┬───────────────┬────────────────────────────────────┐");
         $display("│ Optimization         │ Speedup       │ Analysis                           │");
         $display("├──────────────────────┼───────────────┼────────────────────────────────────┤");
-        $display("│ Forwarding Only      │     %5.2fx    │ CPI: %.2f → %.2f                   │", speedups[1], BASELINE_CPI, FWD_CPI);
+        $display("| Forwarding Only      |     %5.2fx    | CPI: %.2f => %.2f                  |", speedups[1], BASELINE_CPI, FWD_CPI);
         $display("│ Branch Pred Only     │     %5.2fx    │ Accuracy: %.1f%%                    │", speedups[2], BP_ACCURACY * 100);
         $display("│ Cache Only           │     %5.2fx    │ Hit Rate: %.1f%%                    │", speedups[4], CACHE_HIT_RATE * 100);
         $display("│ SIMD Only            │     %5.2fx    │ %0d-lane parallel                   │", speedups[8], SIMD_LANES);
@@ -245,6 +249,8 @@ module tb_comprehensive_analysis;
         $display("");
         
         #100;
+        simulation_done = 1;  // Stop clock before finish
+        #10;
         $finish;
     end
 

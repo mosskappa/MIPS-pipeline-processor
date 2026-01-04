@@ -1,4 +1,4 @@
-# Contribution 4: Quantitative Analysis
+# Contribution 4: CPI Analysis
 
 ## Overview
 Empirical performance measurement comparing pipeline configurations.

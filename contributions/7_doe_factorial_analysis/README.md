@@ -1,4 +1,4 @@
-# Contribution 7: Comprehensive Performance Analysis
+# Contribution 7: DOE Factorial Analysis
 
 ## Overview
 
@@ -24,6 +24,19 @@ Individual optimization analysis is insufficient for understanding real-world pe
 ```tcl
 close_sim -force; set_property top tb_comprehensive_analysis [get_filesets sim_1]; launch_simulation; run 500ns
 ```
+
+## DOE Variable Implementation Specifications
+
+The following table specifies the concrete implementation for each optimization variable used in the DOE analysis:
+
+| Abbrev | Optimization | Implementation Type | Key Parameters |
+|--------|--------------|---------------------|----------------|
+| **FWD** | Data Forwarding | Full Forwarding | EX/MEM → EX, MEM/WB → EX paths |
+| **BP** | Branch Prediction | 2-bit Saturating Counter (PC-indexed) | 16-entry BHT, 2-bit counters, PC[5:2] indexing, 78.33% accuracy |
+| **Cache** | L1 Cache | L1 Only, Direct-Mapped, Write-Back | 8KB total, 32B block, 256 lines, 97.22% hit rate |
+| **SIMD** | SIMD ALU | Packed SIMD (8×8-bit lanes) | 5 operations (+, −, ×, ÷, ^) |
+
+> **Note**: BP accuracy is the weighted average across 4 test patterns (Always Taken 90%, Always Not Taken 85%, Alternating 73%, Loop 78%). Cache hit rate is measured from Contribution 11 testbench.
 
 ## Simulation Results (Actual Vivado Output)
 

@@ -1,7 +1,7 @@
-# Contribution 1: Performance Testbench
+# Contribution 1: Data Forwarding
 
 ## Overview
-A specialized testbench for measuring CPU performance metrics including CPI, IPC, and stall cycles.
+A specialized testbench for measuring CPU performance metrics including CPI, IPC, and stall cycles, demonstrating the impact of **Data Forwarding** on pipeline efficiency.
 
 ![Performance Testbench](../../docs/slides_assets/svg/contribution1_testbench.svg)
 

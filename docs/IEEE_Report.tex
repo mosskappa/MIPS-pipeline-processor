@@ -202,7 +202,7 @@ This project implements 13 distinct optimizations, summarized in Table~\ref{tab:
 \toprule
 \textbf{Category} & \textbf{Contributions} \\
 \midrule
-Pipeline Hazard Mitigation & \#1 Performance Testbench, \#4 Quantitative Analysis, \#6 Branch Prediction, \#7 Comprehensive DOE \\
+Pipeline Hazard Mitigation & \#1 Data Forwarding, \#4 CPI Analysis, \#6 Branch Prediction, \#7 DOE Factorial \\
 \midrule
 Data Hazard Resolution & \#3 Data Forwarding \\
 \midrule
@@ -210,7 +210,7 @@ Parallelism \& Acceleration & \#2 Hardware Unrolling, \#5 SIMD ALU Expansion, \#
 \midrule
 Memory Hierarchy & \#11 L1 Cache, \#12 Integrated Analysis \\
 \midrule
-Parser Enhancement & \#8 Parentheses Support \\
+Parser Enhancement & \#8 Expression Parser \\
 \midrule
 Calculus Operations & \#13 ODE Solver (Euler Method) \\
 \bottomrule
@@ -429,7 +429,7 @@ Table~\ref{tab:testbenches} shows the testbench for each contribution.
 
 This section describes each of the 13 contributions in detail, with implementation specifics and verification results.
 
-\subsection{Contribution 1 \& 4: Performance Testbench and Quantitative Analysis}
+\subsection{Contribution 1 \& 4: Data Forwarding and CPI Analysis}
 \textbf{Goal}: Establish a reusable testbench infrastructure for measuring pipeline performance metrics (CPI, IPC, stall cycles) and quantify the impact of data forwarding.
 
 \subsubsection{Why We Need a Performance Testbench}
@@ -865,6 +865,26 @@ Loop (9T+1N) & Realistic loop & 78\% \\
     \item SIMD ALU (SIMD)
 \end{enumerate}
 
+\textbf{DOE Variable Implementation Specifications}:
+\begin{table}[!t]
+\centering
+\caption{Implementation Specifications for DOE Variables}
+\label{tab:doespec}
+\footnotesize
+\begin{tabular}{@{}llp{4.2cm}@{}}
+\toprule
+\textbf{Abbrev} & \textbf{Implementation Type} & \textbf{Key Parameters} \\
+\midrule
+FWD & Full Forwarding & EX/MEM $\to$ EX, MEM/WB $\to$ EX \\
+BP & 2-bit Saturating Counter (PC-indexed) & 16-entry BHT, 2-bit counters, PC[5:2], \textbf{78.33\% accuracy} \\
+Cache & L1 Only, Direct-Mapped, Write-Back & 8KB, 32B block, 256 lines, \textbf{97.22\% hit rate} \\
+SIMD & Packed SIMD (8$\times$8-bit) & 5 ops (+, $-$, $\times$, $\div$, \^{}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{Note: BP accuracy is weighted average across 4 patterns (Always Taken 90\%, Always Not Taken 85\%, Alternating 73\%, Loop 78\%). Cache uses Write-Allocate policy.}
+
 \textbf{Model Parameters}:
 \begin{table}[!t]
 \centering
@@ -976,7 +996,7 @@ This \textbf{super-additive synergy} ($>1.0$) indicates the cache keeps SIMD uni
 
 \FloatBarrier  % Prevent DOE floats from drifting into Contribution 8
 %-----------------------------------------------------------------------------
-\subsection{Contribution 8: Parentheses Support}
+\subsection{Contribution 8: Expression Parser}
 
 \textbf{Goal}: Implement Dijkstra's Shunting-yard algorithm for hardware expression parsing with full parentheses support and right-associative exponentiation.
 
@@ -1192,6 +1212,38 @@ Area & \textbf{Lower} & Higher \\
 \end{table}
 
 \textbf{4/4 test cases passed (Error $<$2\%). Simulation completed at 420 ns.}
+
+\subsubsection{Natural Logarithm: ln(x)}
+To complement $\exp(x)$, we also implement its inverse function $\ln(x)$ using the same range reduction approach.
+
+\textbf{Algorithm}:
+\begin{equation}
+\ln(x) = \ln(2^k \cdot m) = k \cdot \ln(2) + \ln(m)
+\end{equation}
+where $k$ is determined via leading-zero detection, and $m \in [1, 2)$.
+
+For $\ln(m)$, we use $y = m - 1 \in [0, 1)$ and approximate:
+\begin{equation}
+\ln(1+y) \approx y - \frac{y^2}{2}
+\end{equation}
+
+\begin{table}[!t]
+\centering
+\caption{Polynomial ln(x) Test Results}
+\footnotesize
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+\textbf{Input $x$} & \textbf{Expected} & \textbf{Result} & \textbf{Error} & \textbf{Status} \\
+\midrule
+1.0 & 0.0000 & $\approx$0.0 & $<$1\% & PASS \\
+2.0 & 0.6931 & $\approx$0.69 & $<$5\% & PASS \\
+$e$ (2.718) & 1.0000 & $\approx$1.0 & $<$5\% & PASS \\
+0.5 & -0.6931 & $\approx$-0.69 & $<$5\% & PASS \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{4/4 ln(x) test cases passed.}
 
 %-----------------------------------------------------------------------------
 \FloatBarrier

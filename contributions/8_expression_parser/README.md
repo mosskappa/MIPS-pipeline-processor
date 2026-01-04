@@ -1,4 +1,4 @@
-# Contribution 8: Expression Parser with Parentheses & Right Associativity
+# Contribution 8: Expression Parser (Shunting-yard Algorithm)
 
 ## Overview
 Implemented a hardware expression parser using Dijkstra's Shunting-yard algorithm with **full parentheses support** and **right-associative exponentiation**.

@@ -6,16 +6,16 @@ This folder contains all **13 contributions** I made to this MIPS Pipeline Proce
 
 | # | Contribution | Folder | Type |
 |---|-------------|--------|------|
-| 1 | [Performance Testbench](./1_performance_testbench/) | `1_performance_testbench/` | Measurement Tool |
+| 1 | [Data Forwarding](./1_data_forwarding/) | `1_data_forwarding/` | Pipeline Optimization |
 | 2 | [Hardware Unrolling](./2_hardware_unrolling/) | `2_hardware_unrolling/` | Technique Demo |
 | 3 | [SIMD Parallelism](./3_simd_parallelism/) | `3_simd_parallelism/` | DLP Demo |
-| 4 | [Quantitative Analysis](./4_quantitative_analysis/) | `4_quantitative_analysis/` | Performance Report |
+| 4 | [CPI Analysis](./4_cpi_analysis/) | `4_cpi_analysis/` | Stall Breakdown |
 | 5 | [SIMD ALU Expansion](./5_simd_alu_expansion/) | `5_simd_alu_expansion/` | Full ALU (+,-,×,÷,^) |
 | 6 | [Branch Prediction](./6_branch_prediction/) | `6_branch_prediction/` | 2-bit Predictor |
-| 7 | [Comprehensive Analysis](./7_comprehensive_analysis/) | `7_comprehensive_analysis/` | Synergy Analysis |
-| 8 | [Parentheses Support](./8_parentheses_support/) | `8_parentheses_support/` | Shunting-yard Algorithm |
+| 7 | [DOE Factorial Analysis](./7_doe_factorial_analysis/) | `7_doe_factorial_analysis/` | 2⁴ DOE Study |
+| 8 | [Expression Parser](./8_expression_parser/) | `8_expression_parser/` | Shunting-yard Algorithm |
 | 9 | [CORDIC Math Functions](./9_cordic_math_functions/) | `9_cordic_math_functions/` | 16-stage Pipeline Trig |
-| 10 | [Polynomial Exp](./10_polynomial_exp/) | `10_polynomial_exp/` | ~4-cycle exp() |
+| 10 | [Polynomial Transcendental](./10_polynomial_transcendental/) | `10_polynomial_transcendental/` | exp() + ln() |
 | 11 | [Cache Memory Hierarchy](./11_cache_memory_hierarchy/) | `11_cache_memory_hierarchy/` | L1 Cache (~7x Speedup) |
 | 12 | [Integrated Processor](./12_integrated_processor/) | `12_integrated_processor/` | Combined 10x-31x Speedup |
 | **13** | [ODE Solver (微積分)](./13_ode_solver/) | `13_ode_solver/` | **Euler Method ODE (NEW)** |
