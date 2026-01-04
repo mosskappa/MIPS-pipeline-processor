@@ -148,7 +148,7 @@ style: |
 Computer Architecture, Fall 2025  
 Prof. Katherine Shu-Min Li
 
-Jan 2, 2026
+Jan 4, 2026
 
 
 ---
@@ -194,10 +194,10 @@ Focus on **Parallelism** and **Pipelining** techniques in Verilog HDL:
 
 | # | Contribution | Description |
 |---|-------------|-------------|
-| 1 | **Performance Testbench** | `testbench_metrics.v` for CPI measurement |
+| 1 | **Data Forwarding** | Testbench for CPI measurement + Forwarding |
 | 2 | **Hardware Unrolling** | Verilog `generate` for parallel instantiation |
 | 3 | **SIMD Parallelism** | 8-lane data-level parallelism demo |
-| 4 | **Quantitative Analysis** | CPI improvement (1.82 to 1.26) |
+| 4 | **CPI Analysis** | CPI improvement (1.82 to 1.26) |
 | 5 | **SIMD ALU Expansion** | Full ALU ops (+, -, x, /, ^) |
 
 
@@ -208,10 +208,10 @@ Focus on **Parallelism** and **Pipelining** techniques in Verilog HDL:
 | # | Contribution | Description |
 |---|-------------|-------------|
 | 6 | **Branch Prediction** | 2-bit saturating counter predictor |
-| 7 | **Comprehensive Analysis** | DOE analysis of optimization effects |
+| 7 | **DOE Factorial Analysis** | 2^4 DOE analysis of optimization effects |
 | 8 | **Expression Parser** | Shunting-yard with parentheses |
 | 9 | **CORDIC** | Hardware trigonometry (sin/cos) |
-| 10 | **Polynomial Exp** | Low-latency exp() approximation |
+| 10 | **Polynomial Transcendental** | exp() and ln() approximation |
 
 
 ---
